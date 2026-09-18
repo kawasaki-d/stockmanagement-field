@@ -106,6 +106,33 @@ button{font:inherit;color:inherit;cursor:pointer}
 #dtitle{font-size:18px; font-weight:700; line-height:1.25}
 #dmeta{font-size:11px; color:var(--muted); margin-top:3px; word-break:break-all}
 #dbody{padding:14px max(14px,env(safe-area-inset-right)) 100px max(14px,env(safe-area-inset-left))}
+#dhead.fin{background:var(--ok-bg); border-bottom:2px solid var(--ok)}
+#dhead.fin #dtitle{color:var(--ok)}
+.fbadge{display:none; align-items:center; gap:5px; background:var(--ok); color:#fff;
+  font-size:12px; font-weight:700; padding:4px 11px; border-radius:999px; margin-top:5px}
+#dhead.fin .fbadge{display:inline-flex}
+
+/* ---------- 特記事項 ---------- */
+.note{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-bottom:16px}
+.nhead{display:flex; align-items:center; gap:7px; padding:8px 11px; background:var(--line2)}
+.nhead .t{font-size:13px; font-weight:700; color:var(--muted); margin-right:auto}
+.nt{min-height:34px; padding:0 13px; border:1px solid var(--line); background:var(--panel);
+  border-radius:8px; font-size:12px; font-weight:700; color:var(--muted)}
+.nt[aria-pressed="true"]{background:var(--accent-bg); border-color:var(--accent); color:var(--accent)}
+#ntxt{display:block; width:100%; border:0; padding:11px 13px; min-height:96px; resize:vertical;
+  font:inherit; font-size:15px; line-height:1.55; background:transparent; color:var(--txt)}
+#ntxt:focus{outline:2px solid var(--accent); outline-offset:-2px}
+#npen{display:none}
+.ptools{display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:8px 11px; border-bottom:1px solid var(--line2)}
+.ptools button{min-height:36px; padding:0 12px; border:1px solid var(--line); background:var(--bg);
+  border-radius:8px; font-size:12px; font-weight:700; color:var(--muted)}
+.ptools button[aria-pressed="true"]{background:var(--accent-bg); border-color:var(--accent); color:var(--accent)}
+.ptools label{display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); margin-left:auto; min-height:36px}
+.ptools input[type=checkbox]{width:19px; height:19px}
+#pcv{display:block; width:100%; touch-action:none; background:#fff; cursor:crosshair}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #pcv{background:#f7f7f5}}
+.nfoot{padding:6px 11px; font-size:11px; color:var(--muted); border-top:1px solid var(--line2)}
+.hasnote{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--warn); margin-left:5px; vertical-align:2px}
 .bui{margin-bottom:16px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
 .bui>h3{margin:0; padding:9px 13px; font-size:13px; font-weight:700; background:var(--line2); color:var(--muted); letter-spacing:.02em}
 .buhin{border-top:1px solid var(--line)}
@@ -138,7 +165,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 #fin[aria-pressed="true"]{background:var(--ok-bg); color:var(--ok)}
 
 /* ---------- 印刷ビュー ---------- */
-#pv .note{background:var(--accent-bg); border:1px solid var(--accent); color:var(--txt); border-radius:var(--r); padding:11px 13px; font-size:13px; margin-bottom:12px}
+#pv .pnote{background:var(--accent-bg); border:1px solid var(--accent); color:var(--txt); border-radius:var(--r); padding:11px 13px; font-size:13px; margin-bottom:12px}
 #go{min-height:var(--tap); padding:0 20px; border-radius:var(--r); border:1px solid var(--accent); background:var(--accent); color:#fff; font-weight:700; font-size:15px}
 #paper{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:14px; margin-top:14px; overflow-x:auto}
 table.pl{border-collapse:collapse; width:100%; font-size:11px; table-layout:fixed}
@@ -227,8 +254,8 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 @media print{
   @page{size:A4 portrait; margin:9mm 8mm}
   body{background:#fff; color:#000; font-size:10pt}
-  #top,#tabs,#detail,.tools,#pv .note,#pv .prtools,#paper{border:0!important;background:#fff!important;padding:0!important;margin:0!important}
-  #top,#tabs,.tools,#pv .note,#pv .prtools,#detail{display:none!important}
+  #top,#tabs,#detail,.tools,#pv .pnote,#pv .prtools,#paper{border:0!important;background:#fff!important;padding:0!important;margin:0!important}
+  #top,#tabs,.tools,#pv .pnote,#pv .prtools,#detail{display:none!important}
   .view{display:none!important; padding:0!important}
   .view#pv{display:block!important}
   table.pl th{background:#e9ebee!important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
@@ -261,7 +288,8 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 <section class="view on" id="lv">
   <div class="tools">
     <input type="search" id="q" placeholder="機器名・リスト番号で検索" autocomplete="off">
-    <button class="chip" id="fu" aria-pressed="false">未完了のみ</button>
+    <button class="chip" id="fu" aria-pressed="false">未完了</button>
+    <button class="chip" id="fd" aria-pressed="false">完了</button>
     <button class="chip" id="fj" aria-pressed="false">事後保全</button>
     <button class="chip" id="fk" aria-pressed="false">状態監視</button>
   </div>
@@ -269,7 +297,7 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 </section>
 
 <section class="view" id="pv">
-  <div class="note">
+  <div class="pnote">
     <b>紙で持っていく人用のリストです。</b><br>
     ブラウザの印刷（Ctrl+P）でA4縦に出ます。プレビューで「背景のグラフィック」を有効にすると見出しの網掛けが出ます。
   </div>
@@ -434,6 +462,7 @@ _未分類一覧.csv</div>
       <div>
         <div id="dtitle"></div>
         <div id="dmeta"></div>
+        <span class="fbadge">✓　調査完了</span>
       </div>
     </div>
   </div>
@@ -451,7 +480,10 @@ const DATA = {"title":"敦賀市_天筒浄化ｾﾝﾀｰ  R8年度ｽﾄｯｸ�
 const KEY='stmn.v1.'+(DATA.title||'x');
 let ST={items:{},done:{}};
 try{const r=localStorage.getItem(KEY); if(r) ST=JSON.parse(r);}catch(e){}
-function save(){ try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){} }
+let SAVEWARN=false;
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(ST)); }
+  catch(e){ if(!SAVEWARN){ SAVEWARN=true;
+    alert('保存できませんでした。端末の保存容量が上限に達した可能性があります。手書きを減らすか、不要な案件を消してください。'); } } }
 
 const A=DATA.assets;
 A.forEach((a,i)=>{a._i=i; a.items.forEach((it,j)=>{it._k=i+'-'+j;});});
@@ -482,11 +514,13 @@ A.forEach(a=>{
 
 function list(){
   const q=$('#q').value.trim().toLowerCase();
-  const only=$('#fu').getAttribute('aria-pressed')==='true';
+  const fu=$('#fu').getAttribute('aria-pressed')==='true';
+  const fd=$('#fd').getAttribute('aria-pressed')==='true';
   const fj=$('#fj').getAttribute('aria-pressed')==='true';
   const fk=$('#fk').getAttribute('aria-pressed')==='true';
   const rows=A.filter(a=>{
-    if(only&&ST.done[a._i])return false;
+    if(fu&&!fd&&ST.done[a._i])return false;
+    if(fd&&!fu&&!ST.done[a._i])return false;
     if(fj&&!fk&&a._hz!=='事後保全')return false;
     if(fk&&!fj&&a._hz!=='状態監視')return false;
     if(!q)return true;
@@ -503,7 +537,7 @@ function list(){
       : `<span class="mt">部位 ${nb} ／ 部品 ${np} ／ 確認項目 ${a.items.length}</span>`;
     return `<div class="card ${cls}">
       <button class="cmain" data-i="${a._i}">
-        <span class="r1"><span class="no">${esc(a.no)}</span><span class="hzb ${hzc}">${esc(a._hz)}</span></span>
+        <span class="r1"><span class="no">${esc(a.no)}</span><span class="hzb ${hzc}">${esc(a._hz)}</span>${hasNote(a._i)?'<span class="hzb" style="background:var(--warn-bg);color:var(--warn)">特記あり</span>':''}</span>
         <span class="nm">${esc(a.name)}</span>
         ${body}
       </button>
@@ -515,6 +549,115 @@ function list(){
   }).join('') : '<p class="empty">該当する機器がありません</p>';
   stats();
 }
+
+/* ---------- 特記事項（キーボード＋手書き） ---------- */
+const LW=1000, LH=560;                     // 手書きの論理座標系（端末に依存しない）
+const NOTE_HTML=`<div class="note">
+  <div class="nhead"><span class="t">特記事項</span>
+    <button class="nt" id="nk" aria-pressed="true">キーボード</button>
+    <button class="nt" id="np" aria-pressed="false">手書き</button></div>
+  <textarea id="ntxt" placeholder="故障・異常・気づいた点・次回への申し送りなど"></textarea>
+  <div id="npen">
+    <div class="ptools">
+      <button id="tpen" aria-pressed="true">ペン</button>
+      <button id="tera" aria-pressed="false">消しゴム</button>
+      <button id="tundo">ひとつ戻す</button>
+      <button id="tclr">全部消す</button>
+      <label><input type="checkbox" id="tonly" checked>ペンのみ</label>
+    </div>
+    <canvas id="pcv"></canvas>
+    <div class="nfoot" id="nfoot"></div>
+  </div></div>`;
+let STK=[], MODE='pen', drawing=null;
+const note=()=>ST.notes&&ST.notes[CUR._i] || {t:'',s:[]};
+const hasNote=i=>{const n=ST.notes&&ST.notes[i]; return !!(n&&((n.t||'').trim()||(n.s||[]).length));};
+
+function noteInit(){
+  const n=note();
+  STK=JSON.parse(JSON.stringify(n.s||[]));
+  $('#ntxt').value=n.t||'';
+  $('#nk').setAttribute('aria-pressed','true'); $('#np').setAttribute('aria-pressed','false');
+  $('#ntxt').style.display='block'; $('#npen').style.display='none';
+  MODE='pen'; $('#tpen').setAttribute('aria-pressed','true'); $('#tera').setAttribute('aria-pressed','false');
+  $('#nk').onclick=()=>toggleNote(false);
+  $('#np').onclick=()=>toggleNote(true);
+  $('#ntxt').oninput=()=>{ noteSave(); };
+  $('#tpen').onclick=()=>setMode('pen'); $('#tera').onclick=()=>setMode('era');
+  $('#tundo').onclick=()=>{ STK.pop(); redraw(); noteSave(); };
+  $('#tclr').onclick=()=>{ if(!STK.length||confirm('手書きを全部消します。よろしいですか？')){ STK=[]; redraw(); noteSave(); } };
+  bindPen();
+}
+function toggleNote(pen){
+  $('#nk').setAttribute('aria-pressed', pen?'false':'true');
+  $('#np').setAttribute('aria-pressed', pen?'true':'false');
+  $('#ntxt').style.display = pen?'none':'block';
+  $('#npen').style.display = pen?'block':'none';
+  if(pen) sizeCanvas();
+}
+function setMode(m){ MODE=m;
+  $('#tpen').setAttribute('aria-pressed', m==='pen'?'true':'false');
+  $('#tera').setAttribute('aria-pressed', m==='era'?'true':'false'); }
+function noteSave(){
+  if(!CUR) return;
+  ST.notes=ST.notes||{};
+  const t=$('#ntxt')?$('#ntxt').value:'';
+  if(!t.trim() && !STK.length) delete ST.notes[CUR._i];
+  else ST.notes[CUR._i]={t:t, s:STK};
+  save();
+  const f=$('#nfoot'); if(f) f.textContent = STK.length? STK.length+' ストローク':'Apple Pencil または指で書けます';
+}
+function sizeCanvas(){
+  const cv=$('#pcv'); if(!cv) return;
+  const w=cv.clientWidth||600, dpr=Math.min(window.devicePixelRatio||1, 2);
+  cv.width=Math.round(w*dpr); cv.height=Math.round(w*LH/LW*dpr);
+  cv.style.height=Math.round(w*LH/LW)+'px';
+  redraw();
+}
+function redraw(){
+  const cv=$('#pcv'); if(!cv) return;
+  const x=cv.getContext('2d'), k=cv.width/LW;
+  x.clearRect(0,0,cv.width,cv.height);
+  x.lineCap='round'; x.lineJoin='round'; x.strokeStyle='#14213d';
+  STK.forEach(s=>{
+    x.lineWidth=(s.w||3)*k; x.beginPath();
+    for(let i=0;i<s.p.length;i+=2){ const px=s.p[i]*k, py=s.p[i+1]*k;
+      if(i===0) x.moveTo(px,py); else x.lineTo(px,py); }
+    if(s.p.length===2) x.lineTo(s.p[0]*k+0.1, s.p[1]*k+0.1);
+    x.stroke();
+  });
+}
+function bindPen(){
+  const cv=$('#pcv'); if(!cv) return;
+  const pos=e=>{ const r=cv.getBoundingClientRect();
+    return [Math.round((e.clientX-r.left)/r.width*LW), Math.round((e.clientY-r.top)/r.width*LW)]; };
+  cv.onpointerdown=e=>{
+    const onlyPen=$('#tonly').checked;
+    if(onlyPen && e.pointerType==='touch') return;      // 手のひら・指を無視
+    e.preventDefault(); cv.setPointerCapture(e.pointerId);
+    const [x,y]=pos(e);
+    if(MODE==='era'){ drawing='era'; erase(x,y); return; }
+    drawing={w: e.pointerType==='pen' ? 2+ (e.pressure||0.5)*3 : 3, p:[x,y]};
+    STK.push(drawing); redraw();
+  };
+  cv.onpointermove=e=>{
+    if(!drawing) return; e.preventDefault();
+    const [x,y]=pos(e);
+    if(drawing==='era'){ erase(x,y); return; }
+    const p=drawing.p, n=p.length;
+    if(n>=2 && Math.abs(p[n-2]-x)<2 && Math.abs(p[n-1]-y)<2) return;
+    p.push(x,y); redraw();
+  };
+  const end=()=>{ if(drawing){ drawing=null; noteSave(); } };
+  cv.onpointerup=end; cv.onpointercancel=end; cv.onpointerleave=end;
+  sizeCanvas();
+}
+function erase(x,y){
+  const R=22, before=STK.length;
+  STK=STK.filter(s=>{ for(let i=0;i<s.p.length;i+=2){
+      if(Math.hypot(s.p[i]-x, s.p[i+1]-y)<R) return false; } return true; });
+  if(STK.length!==before) redraw();
+}
+window.addEventListener('resize',()=>{ if($('#pcv')&&$('#npen').style.display==='block') sizeCanvas(); });
 
 /* ---------- 機器詳細 ---------- */
 let CUR=null;
@@ -528,7 +671,7 @@ function open_(i){
     if(!g[it.b][it.p]) g[it.b][it.p]=[];
     g[it.b][it.p].push(it);
   });
-  $('#dbody').innerHTML=Object.keys(g).map(b=>`<div class="bui"><h3>${esc(b)}</h3>`+
+  $('#dbody').innerHTML=NOTE_HTML+Object.keys(g).map(b=>`<div class="bui"><h3>${esc(b)}</h3>`+
     Object.keys(g[b]).map(p=>{
       const arr=g[b][p];
       return `<div class="buhin">
@@ -547,6 +690,7 @@ function open_(i){
           </div>`;
         }).join('')+`</div>`;
     }).join('')+`</div>`).join('');
+  noteInit();
   dfoot();
   $('#detail').classList.add('on');
   document.body.style.overflow='hidden';
@@ -554,19 +698,46 @@ function open_(i){
 }
 function dfoot(){
   $('#dcnt').textContent='撮影済 '+shot(CUR)+' / '+CUR.items.length+' 項目';
-  $('#fin').setAttribute('aria-pressed', ST.done[CUR._i]?'true':'false');
-  $('#fin').textContent = ST.done[CUR._i]?'完了を取り消す':'調査完了';
+  const d=!!ST.done[CUR._i];
+  $('#fin').setAttribute('aria-pressed', d?'true':'false');
+  $('#fin').textContent = d?'完了を取り消す':'調査完了';
+  $('#dhead').classList.toggle('fin', d);
 }
-function close_(){ $('#detail').classList.remove('on'); document.body.style.overflow=''; list(); }
+function close_(){ noteSave(); $('#detail').classList.remove('on'); document.body.style.overflow=''; list(); }
 
+/* チェックの反映は画面を作り直さず、その行だけ塗り替える（スクロール位置が飛ばない） */
+function paintItem(k){
+  const el=$('#dbody').querySelector('.item[data-k="'+k+'"]');
+  if(!el) return;
+  const v=st(k);
+  el.classList.toggle('ok', v>0);
+  el.classList.toggle('cam', v===2);
+}
+function paintCounts(){
+  $('#dbody').querySelectorAll('.buhin').forEach(b=>{
+    const its=[...b.querySelectorAll('.item')];
+    const c=b.querySelector('.bh .c');
+    if(c) c.textContent=its.filter(x=>st(x.dataset.k)).length+'/'+its.length;
+  });
+  dfoot();
+}
 $('#dbody').addEventListener('click',e=>{
   const all=e.target.closest('[data-all]');
-  if(all){ const ks=all.dataset.all.split(','); const to=ks.every(k=>st(k))?0:1;
-    ks.forEach(k=>{ if(to) ST.items[k]=1; else delete ST.items[k]; }); save(); open_(CUR._i); return; }
+  if(all){
+    const ks=all.dataset.all.split(','), to=ks.every(k=>st(k))?0:1;
+    ks.forEach(k=>{ if(to) ST.items[k]=1; else delete ST.items[k]; paintItem(k); });
+    save(); paintCounts(); return;
+  }
   const cam=e.target.closest('[data-cam]');
-  if(cam){ const k=cam.dataset.cam; ST.items[k]= st(k)===2?0:2; if(!ST.items[k])delete ST.items[k]; save(); open_(CUR._i); return; }
+  if(cam){
+    const k=cam.dataset.cam; ST.items[k]= st(k)===2?0:2; if(!ST.items[k])delete ST.items[k];
+    save(); paintItem(k); paintCounts(); return;
+  }
   const row=e.target.closest('.item');
-  if(row){ const k=row.dataset.k; ST.items[k]= st(k)?0:1; if(!ST.items[k])delete ST.items[k]; save(); open_(CUR._i); }
+  if(row){
+    const k=row.dataset.k; ST.items[k]= st(k)?0:1; if(!ST.items[k])delete ST.items[k];
+    save(); paintItem(k); paintCounts();
+  }
 });
 $('#fin').addEventListener('click',()=>{ if(ST.done[CUR._i])delete ST.done[CUR._i]; else ST.done[CUR._i]=1; save(); dfoot(); });
 $('#back').addEventListener('click',close_);
@@ -576,7 +747,7 @@ $('#list').addEventListener('click',e=>{
   const c=e.target.closest('[data-i]'); if(c)open_(+c.dataset.i);
 });
 $('#q').addEventListener('input',list);
-['fu','fj','fk'].forEach(id=>$('#'+id).addEventListener('click',e=>{
+['fu','fd','fj','fk'].forEach(id=>$('#'+id).addEventListener('click',e=>{
   const b=e.currentTarget; b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'); list();
 }));
 
