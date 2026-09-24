@@ -204,6 +204,11 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 .einfo{font-size:14px; font-weight:700; margin-top:10px; font-variant-numeric:tabular-nums}
 .ewarn{display:none; background:var(--warn-bg); border:1px solid var(--warn); color:var(--txt);
   border-radius:8px; padding:9px 11px; font-size:12px; margin-top:10px}
+.e2{display:flex; gap:12px; flex-wrap:wrap}
+.e2 span{flex:1 1 140px}
+.e2 small{display:block; font-size:11px; color:var(--muted); margin-bottom:4px}
+.e2 select{width:100%; min-height:var(--tap); padding:0 12px; font:inherit; font-size:15px;
+  border:1px solid var(--line); border-radius:var(--r); background:var(--bg); color:var(--txt)}
 .ebtns{display:flex; gap:9px; flex-wrap:wrap; margin-top:12px}
 .ebtns button{flex:1 1 150px; min-height:var(--tap); border-radius:var(--r); font-size:15px; font-weight:700;
   border:1px solid var(--accent); background:var(--accent); color:#fff}
@@ -347,6 +352,33 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 </section>
 
 <section class="view" id="ev">
+  <div class="ecard">
+    <label class="el">写真の画質（これから撮る写真に適用されます）</label>
+    <select id="eqty"></select>
+    <div id="eqinfo" class="einfo"></div>
+    <p class="ehelp">iPadに貯まる原本の画質です。原寸で撮っておけば、あとから何度でも別の画質で書き出せます。</p>
+  </div>
+  <div class="ecard">
+    <label class="el">成果品（ZIP）に入れる写真の大きさ</label>
+    <div class="e2">
+      <span><small>長辺</small>
+        <select id="eepx">
+          <option value="1600">1600px</option>
+          <option value="2048">2048px</option>
+          <option value="2560">2560px</option>
+          <option value="0">縮小しない</option>
+        </select></span>
+      <span><small>1枚の上限</small>
+        <select id="eekb">
+          <option value="300">300 KB</option>
+          <option value="500">500 KB</option>
+          <option value="800">800 KB</option>
+          <option value="0">上限なし</option>
+        </select></span>
+    </div>
+    <div id="eeinfo" class="einfo"></div>
+    <p class="ehelp">書き出すときだけ縮小します。iPadの中の原本はそのまま残るので、あとで別の大きさで出し直せます。上限を超える写真は、収まるまで自動で品質を落とします。</p>
+  </div>
   <div class="ecard">
     <label class="el">書き出す範囲</label>
     <select id="escope">
@@ -522,7 +554,42 @@ function list(){
 }
 
 /* ================= 写真 ================= */
-const MAXPX=2048, JPEGQ=0.85;
+const PRESETS={
+  '1600':{px:1600,q:0.80,n:'1600px / 品質80　軽い'},
+  '2048':{px:2048,q:0.85,n:'2048px / 品質85　標準'},
+  '2560':{px:2560,q:0.88,n:'2560px / 品質88　高め'},
+  '3024':{px:3024,q:0.90,n:'3024px / 品質90　かなり高い'},
+  '0'   :{px:0,   q:0.92,n:'原寸 / 品質92　最高（容量大）'}
+};
+const cfg=()=>PRESETS[(ST.cfg&&ST.cfg.p)||'2048']||PRESETS['2048'];
+/* 書き出し用（成果品）の縮小設定。撮影した原本には手を触れない */
+const EPX={'1600':1600,'2048':2048,'2560':2560,'0':0};
+const EKB={'300':300,'500':500,'800':800,'0':0};
+const epx=()=>EPX[(ST.cfg&&ST.cfg.ep)||'2048'] ?? 2048;
+const ekb=()=>EKB[(ST.cfg&&ST.cfg.ekb)||'500'] ?? 500;
+
+/* 目標サイズに収まるまで品質を落として作り直す（原本は残したまま） */
+async function reencode(blob, w0, h0){
+  const px=epx(), kb=ekb();
+  if(!px && !kb) return blob;                                  // 原寸のまま出す
+  if((!px || Math.max(w0,h0)<=px) && (!kb || blob.size<=kb*1024)) return blob;  // すでに条件内なら再圧縮しない
+  const bmp=await createImageBitmap(blob);
+  let scale = px ? Math.min(1, px/Math.max(bmp.width,bmp.height)) : 1;
+  let out=null;
+  for(let round=0; round<3; round++){
+    const w=Math.max(1,Math.round(bmp.width*scale)), h=Math.max(1,Math.round(bmp.height*scale));
+    const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    cv.getContext('2d').drawImage(bmp,0,0,w,h);
+    for(const q of [0.85,0.78,0.70,0.62,0.55,0.45]){
+      out=await new Promise(r=>cv.toBlob(r,'image/jpeg',q));
+      if(!kb || out.size<=kb*1024){ if(bmp.close)bmp.close();
+        return out.size<blob.size ? out : blob; }
+    }
+    scale *= 0.8;          // 品質を下げきっても収まらなければ、少し小さくして再挑戦
+  }
+  if(bmp.close) bmp.close();
+  return (out && out.size<blob.size) ? out : blob;
+}
 const UKEY=a=>a+'-U';                              // 未分類
 const photosOf=(ai,key)=>Object.keys(ST.photos)
   .filter(id=>ST.photos[id].a===ai && (key===undefined || (key==='__z'? ST.photos[id].z : (ST.photos[id].k||[]).includes(key))))
@@ -533,14 +600,16 @@ const totalBytes=()=>Object.values(ST.photos).reduce((n,p)=>n+(p.b||0),0);
 
 /* 画像を長辺MAXPXに縮めてJPEGにする */
 async function shrink(src){
-  const bmp = src instanceof Blob ? await createImageBitmap(src) : src;
+  const c=cfg();
+  const own = src instanceof Blob;                 // 自分で作ったものだけ破棄する
+  const bmp = own ? await createImageBitmap(src) : src;
   const w0=bmp.width||bmp.videoWidth, h0=bmp.height||bmp.videoHeight;
-  const s=Math.min(1, MAXPX/Math.max(w0,h0));
+  const s = c.px ? Math.min(1, c.px/Math.max(w0,h0)) : 1;
   const w=Math.round(w0*s), h=Math.round(h0*s);
   const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
   cv.getContext('2d').drawImage(bmp,0,0,w,h);
-  if(bmp.close) bmp.close();
-  const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',JPEGQ));
+  if(own && bmp.close) bmp.close();
+  const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',c.q));
   return {blob,w,h};
 }
 async function addPhoto(ai, keys, src, zenkei){
@@ -959,15 +1028,17 @@ async function buildEntries(targets, onProg){
   const un=[['機器No','機器名称','ファイル名','撮影日時']];
   const notes=[['機器No','機器名称','特記事項（文字入力）','手書き']];
   const mis=[['機器No','機器名称','調査単位','部位名称','部品名称','確認項目','状態']];
-  const ids=[];
+  const ids=[], EB=[];
   for(const a of targets){
     const f=folder(a), seq={};
     for(const id of photosOf(a._i)){
       const p=ST.photos[id], base=photoName(a,p);
       seq[base]=(seq[base]||0)+1;
       const fn=f+'/'+base+'_'+seq[base]+'.jpg';
-      const blob=await get('blobs',id);
-      if(!blob) continue;
+      const blob0=await get('blobs',id);
+      if(!blob0) continue;
+      const blob=await reencode(blob0, p.w, p.h);
+      EB.push(blob.size);
       E.push({name:fn, data:blob}); ids.push(id);
       const keys=(p.k||[]).filter(k=>!k.endsWith('-U')).map(k=>CURITEM(a,k)).filter(Boolean);
       if(p.z) rec.push([a.no,a.name,'','','',fn,stamp(p.ts),'全景']);
@@ -988,7 +1059,7 @@ async function buildEntries(targets, onProg){
   E.push({name:'_未撮影一覧.csv', data:csv(mis)});
   if(un.length>1) E.push({name:'_未分類一覧.csv', data:csv(un)});
   if(notes.length>1) E.push({name:'_特記事項.csv', data:csv(notes)});
-  return {E, ids};
+  return {E, ids, EB};
 }
 
 function expTargets(){
@@ -1005,7 +1076,11 @@ function expInfo(){
   const n=t.reduce((s,a)=>s+nPhotos(a._i),0);
   const b=t.reduce((s,a)=>s+photosOf(a._i).reduce((x,id)=>x+(ST.photos[id].b||0),0),0);
   $('#einfo').textContent=`${t.length} 機器 ／ 写真 ${n} 枚 ／ 約 ${(b/1048576).toFixed(0)} MB`;
-  $('#ewarn').style.display = b>260*1048576 ? 'block':'none';
+  const px=epx(), kb=ekb();
+  const est = kb? Math.min(kb*1024, b/Math.max(n,1)) : b/Math.max(n,1);
+  $('#eeinfo').textContent = (!px&&!kb) ? '原本をそのまま入れます　→　推定 約 '+(b/1048576).toFixed(0)+' MB'
+    : `長辺 ${px||'そのまま'}${px?'px':''} ／ 1枚 ${kb?kb+'KB以内':'上限なし'}　→　ZIP推定 約 ${(est*n/1048576).toFixed(0)} MB`;
+  $('#ewarn').style.display = (est*n)>260*1048576 ? 'block':'none';
   $('#ego').disabled = n===0 && t.length===0;
   return t;
 }
@@ -1016,8 +1091,8 @@ async function doExport(){
   const pr=(a,b,label)=>{ $('#eprog').style.display='block'; $('#eprogt').textContent=label+' '+a+' / '+b;
     $('#eprogb').style.width=(a/b*100)+'%'; };
   try{
-    pr(0,1,'写真を集めています');
-    const {E,ids}=await buildEntries(t,(i,n)=>pr(i,n,'写真を集めています'));
+    pr(0,1,'成果品サイズに変換しています');
+    const {E,ids,EB}=await buildEntries(t,(i,n)=>pr(i,n,'成果品サイズに変換しています'));
     const zip=await makeZip(E,(i,n)=>pr(i,n,'ZIPを作成しています'));
     pr(1,1,'検証しています');
     const v=await verifyZip(zip,E);
@@ -1029,7 +1104,9 @@ async function doExport(){
     a.href=u; a.download=fn; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(u),20000);
     ids.forEach(id=>ST.exported[id]=Date.now()); await saveNow();
-    $('#eprogt').textContent='完了：'+E.length+' ファイル ／ '+(zip.size/1048576).toFixed(0)+' MB（検証OK）';
+    const avg=EB.length? EB.reduce((a,b)=>a+b,0)/EB.length/1024 : 0;
+    $('#eprogt').textContent='完了：'+E.length+' ファイル ／ '+(zip.size/1048576).toFixed(1)+' MB'+
+      (EB.length?'（写真 '+EB.length+' 枚・1枚平均 '+avg.toFixed(0)+' KB）':'')+'　検証OK';
     $('#eprogb').style.width='100%';
     expInfo(); elist();
   }catch(e){
@@ -1164,6 +1241,11 @@ function linkUI(){
 }
 
 /* ---------- 書き出し ---------- */
+$('#eqty').innerHTML=Object.keys(PRESETS).map(k=>`<option value="${k}">${PRESETS[k].n}</option>`).join('');
+$('#eqty').addEventListener('change',e=>{ ST.cfg=Object.assign(ST.cfg||{},{p:e.target.value}); save(); avgInfo(); });
+['eepx','eekb'].forEach(id=>$('#'+id).addEventListener('change',e=>{
+  ST.cfg=Object.assign(ST.cfg||{}, id==='eepx'?{ep:e.target.value}:{ekb:e.target.value});
+  save(); expInfo(); }));
 $('#escope').addEventListener('change',expInfo);
 $('#ego').addEventListener('click',doExport);
 $('#ephoto').addEventListener('click',toPhotos);
@@ -1174,7 +1256,17 @@ $('#epurge').addEventListener('click',async()=>{
   for(const id of ids) await delPhoto(id);
   await saveNow(); expInfo(); elist(); quota(); stats(); alert(ids.length+' 枚を削除しました。');
 });
+function avgInfo(){
+  const ps=Object.values(ST.photos);
+  const c=cfg();
+  const el=$('#eqinfo'); if(!el) return;
+  if(!ps.length){ el.textContent='現在の設定：'+c.n+'　／　まだ実測値がありません'; return; }
+  const avg=ps.reduce((n,p)=>n+(p.b||0),0)/ps.length;
+  const px=ps[ps.length-1];
+  el.textContent=`実測 1枚あたり 約 ${(avg/1024).toFixed(0)} KB（直近 ${px.w}×${px.h}）　→　1,106枚なら約 ${(avg*1106/1073741824).toFixed(2)} GB`;
+}
 async function quota(){
+  avgInfo();
   let s='';
   try{ const e=await navigator.storage.estimate();
     s=`このツールの使用量 約 ${(totalBytes()/1048576).toFixed(0)} MB（写真 ${totalPhotos()} 枚）　／　端末の空き 約 ${((e.quota-e.usage)/1073741824).toFixed(1)} GB`;
@@ -1198,6 +1290,9 @@ async function quota(){
   }catch(e){
     alert('保存領域を開けませんでした。プライベートブラウズを解除して、ホーム画面のアイコンから起動してください。\n'+(e&&e.message||e));
   }
+  $('#eqty').value=(ST.cfg&&ST.cfg.p)||'2048';
+  $('#eepx').value=(ST.cfg&&ST.cfg.ep)||'2048';
+  $('#eekb').value=(ST.cfg&&ST.cfg.ekb)||'500';
   list();
 })();
 </script>
