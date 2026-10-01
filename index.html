@@ -392,8 +392,11 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
       <button id="ego">ZIPを書き出す</button>
       <button id="ephoto" class="sub">写真アプリへ保存</button>
     </div>
+    <div class="ebtns" id="eshareline" style="display:none">
+      <button id="eshare" class="sub">保存先を選びなおす（共有シート）</button>
+    </div>
     <div id="eprog" class="eprog"><div class="eprogbar"><i id="eprogb"></i></div><div id="eprogt"></div></div>
-    <p class="ehelp">書き出してもツールの中の写真は消えません。PCで中身を確認してから、下の「書き出し済みの写真を削除」で空きを作ってください。</p>
+    <p class="ehelp">iPadでは画面上部に「ダウンロードしますか？」と出ます。出ないときは下の「保存先を選びなおす」から「ファイルに保存」を選んでください。<br>書き出してもツールの中の写真は消えません。PCで中身を確認してから、下の「書き出し済みの写真を削除」で空きを作ってください。</p>
   </div>
   <div class="ecard">
     <label class="el">機器ごとの状況</label>
@@ -1084,6 +1087,17 @@ function expInfo(){
   $('#ego').disabled = n===0 && t.length===0;
   return t;
 }
+let LASTZIP=null, LASTNAME='';
+async function shareZip(){
+  if(!LASTZIP){ alert('先に「ZIPを書き出す」を押してください。'); return; }
+  const f=new File([LASTZIP], LASTNAME, {type:'application/zip'});
+  if(navigator.canShare && navigator.canShare({files:[f]})){
+    try{ await navigator.share({files:[f], title:LASTNAME}); return; }catch(e){ if(e&&e.name==='AbortError') return; }
+  }
+  const u=URL.createObjectURL(LASTZIP); const a=document.createElement('a');
+  a.href=u; a.download=LASTNAME; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),20000);
+}
 async function doExport(){
   const t=expTargets();
   if(!t.length){ alert('書き出す対象がありません。'); return; }
@@ -1100,6 +1114,7 @@ async function doExport(){
       go.disabled=false; $('#eprog').style.display='none'; return; }
     const d=new Date(), z=n=>String(n).padStart(2,'0');
     const fn='ストマネ_'+safe(DATA.title).slice(0,24)+'_'+d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes())+'.zip';
+    LASTZIP=zip; LASTNAME=fn; $('#eshareline').style.display='flex';
     const u=URL.createObjectURL(zip); const a=document.createElement('a');
     a.href=u; a.download=fn; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(u),20000);
@@ -1249,6 +1264,7 @@ $('#eqty').addEventListener('change',e=>{ ST.cfg=Object.assign(ST.cfg||{},{p:e.t
 $('#escope').addEventListener('change',expInfo);
 $('#ego').addEventListener('click',doExport);
 $('#ephoto').addEventListener('click',toPhotos);
+$('#eshare').addEventListener('click',shareZip);
 $('#epurge').addEventListener('click',async()=>{
   const ids=Object.keys(ST.photos).filter(id=>ST.exported[id]);
   if(!ids.length){ alert('書き出し済みの写真はありません。'); return; }
