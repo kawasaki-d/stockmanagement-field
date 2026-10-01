@@ -1,6 +1,6 @@
 /* ストマネ現場チェックリスト：オフライン起動用。
    電波があれば最新版を取りに行き、無ければ前回保存した版で起動する。 */
-const CACHE='stmn-2026-10-01_1623';
+const CACHE='stmn-2026-10-01_1704';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./apple-touch-icon.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{
   e.waitUntil((async()=>{
