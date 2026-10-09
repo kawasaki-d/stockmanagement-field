@@ -1,7 +1,7 @@
 /* ストマネ現場チェックリスト：オフライン起動と自動更新。
    起動はいつも iPad の中の保存分からすぐ行う（電波の弱い場所でも待たない）。
    新しい版はアプリ側が見つけて、この sw.js を入れ替える → 入れ替わったら画面が自動で切り替わる。 */
-const VERSION='2026-10-09_1900';
+const VERSION='2026-10-09_2023';
 const CACHE='stmn-'+VERSION;
 const ASSETS=['./index.html','./manifest.webmanifest','./apple-touch-icon.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{

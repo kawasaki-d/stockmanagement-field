@@ -298,6 +298,22 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 .empty{color:var(--muted); text-align:center; padding:40px 0; font-size:calc(14px*var(--fz,1))}
 
 /* ---------- 書き出しビュー ---------- */
+.emain{border:2px solid var(--accent)}
+.ewho{font-size:calc(14px*var(--fz,1)); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.ewho b.none{color:var(--warn)}
+.elink{border:0; background:none; color:var(--accent); font:inherit; font-size:calc(13px*var(--fz,1)); text-decoration:underline; padding:4px}
+.euex{margin-top:10px; font-size:calc(12px*var(--fz,1)); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; line-height:1.7; word-break:break-all}
+.euex b{font-weight:700; color:var(--muted); margin-right:6px}
+.euex code{font-family:ui-monospace,Menlo,monospace; font-size:.95em}
+.escopel{font-size:calc(12px*var(--fz,1)); color:var(--muted); margin-top:2px}
+.escopel.alt{color:var(--warn); font-weight:700}
+.esteps{margin:12px 0 0; padding-left:1.3em; font-size:calc(12px*var(--fz,1)); color:var(--muted); line-height:1.6}
+.edet>summary{font-weight:800; font-size:calc(14px*var(--fz,1)); cursor:pointer; padding:4px 0; list-style:none}
+.edet>summary::-webkit-details-marker{display:none}
+.edet>summary::before{content:'▶'; display:inline-block; margin-right:8px; font-size:11px; transition:transform .15s}
+.edet[open]>summary::before{transform:rotate(90deg)}
+.edet>summary small{font-weight:400; color:var(--muted)}
+.esub{border-top:1px solid var(--line); padding:14px 0 4px; margin-top:12px}
 .ecard{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:14px; margin-bottom:14px}
 .el{display:block; font-size:calc(12px*var(--fz,1)); font-weight:700; color:var(--muted); margin-bottom:7px}
 #escope{width:100%; min-height:var(--tap); padding:0 12px; font:inherit; font-size:calc(15px*var(--fz,1));
@@ -661,19 +677,48 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 </section>
 
 <section class="view" id="ev">
+  <div class="ecard emain">
+    <label class="el">書き出し（1日の終わりに）</label>
+    <div class="ewho">書き出す人：<b id="ewho"></b><button id="ewhoedit" class="elink">変える</button></div>
+    <label id="efacl" style="display:none;margin-top:10px;font-size:14px;align-items:center;gap:8px"><input type="checkbox" id="efac" style="width:20px;height:20px"> <span id="efact"></span></label>
+    <div id="einfo" class="einfo"></div>
+    <div id="escopel" class="escopel"></div>
+    <div id="ewarn" class="ewarn"></div>
+    <div class="ebtns">
+      <button id="ego">ZIPを書き出す</button>
+      <button id="ephoto" class="sub">写真アプリへ保存</button>
+    </div>
+    <div class="ebtns" id="eshareline" style="display:none">
+      <button id="eshare" class="sub">さっきのZIPを共有シートから保存する</button>
+    </div>
+    <div id="eprog" class="eprog"><div class="eprogbar"><i id="eprogb"></i></div><div id="eprogt"></div></div>
+    <ol class="esteps">
+      <li>「ZIPを書き出す」→「ファイル」に保存 → 保存できたら「保存できた」を押す（押した写真だけが書き出し済みになり、次からは新しい写真だけが入ります）</li>
+      <li>「写真アプリへ保存」→ 共有シートで「画像を保存」（100枚ずつ。押すたびに続きを保存）</li>
+    </ol>
+  </div>
   <div class="ecard">
+    <label class="el">機器ごとの状況</label>
+    <div id="elist"></div>
+  </div>
+  <details class="ecard edet" id="edet"><summary>詳細設定 <small>（普段はさわらなくて大丈夫です）</small></summary>
+  <div class="esub">
     <label class="el">書き出す人の名前（この iPad を使う人）</label>
     <input type="text" id="euser" class="etext" placeholder="例：河﨑" autocomplete="off">
     <label class="echk"><input type="checkbox" id="euname"> 写真のファイル名にも名前を入れる（複数人の写真を1つのフォルダにまとめても上書きされません）</label>
-    <p class="ehelp">ZIP と調査記録（Excel）のファイル名に入ります。この iPad の設定で、すべての案件に共通です。</p>
+    <div class="euex" id="euex"></div>
+    <p class="ehelp">この iPad の設定で、すべての案件に共通です。</p>
   </div>
-  <div class="ecard">
-    <label class="el">撮影の画質（iPadに保存される原本。これから撮る写真に適用）</label>
-    <select id="eqty"></select>
-    <div id="eqinfo" class="einfo"></div>
-    <p class="ehelp">iPadに貯まる原本の画質です。原寸で撮っておけば、あとから何度でも別の画質で書き出せます。</p>
+  <div class="esub">
+    <label class="el">書き出す範囲</label>
+    <select id="escope">
+      <option value="new" selected>まだ書き出していない写真だけ（普段はこれ）</option>
+      <option value="all">写真のある機器すべて（書き出し済みの写真も含めて全部。案件の最後のまとめに）</option>
+      <option value="done">調査完了にした機器だけ</option>
+    </select>
+    <p class="ehelp">アプリを開き直すと「まだ書き出していない写真だけ」に戻ります。</p>
   </div>
-  <div class="ecard">
+  <div class="esub">
     <label class="el">書き出すときの写真の大きさ</label>
     <select id="eex">
       <option value="300">1枚 300KB以内（長辺1600px）</option>
@@ -684,30 +729,26 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
     <div id="eeinfo" class="einfo"></div>
     <p class="ehelp">ZIPに入れる写真だけをこの大きさにします。iPadの中の原本はそのまま残るので、あとで別の大きさで出し直せます。上限を超える写真は、収まるまで自動で品質と寸法を落とします。写真には撮影日時（EXIF）が入ります。</p>
   </div>
-  <div class="ecard">
-    <label class="el">書き出す範囲</label>
-    <select id="escope">
-      <option value="new" selected>まだ書き出していない写真だけ</option>
-      <option value="all">写真のある機器すべて（書き出し済みの写真も含めて全部）</option>
-      <option value="done">調査完了にした機器だけ</option>
-    </select>
-    <label id="efacl" style="display:none;margin-top:10px;font-size:14px;align-items:center;gap:8px"><input type="checkbox" id="efac" style="width:20px;height:20px"> <span id="efact"></span></label>
-    <div id="einfo" class="einfo"></div>
-    <div id="ewarn" class="ewarn"></div>
-    <div class="ebtns">
-      <button id="ego">ZIPを書き出す</button>
-      <button id="ephoto" class="sub">写真アプリへ保存</button>
-    </div>
-    <div class="ebtns" id="eshareline" style="display:none">
-      <button id="eshare" class="sub">さっきのZIPを共有シートから保存する</button>
-    </div>
-    <div id="eprog" class="eprog"><div class="eprogbar"><i id="eprogb"></i></div><div id="eprogt"></div></div>
-    <p class="ehelp">書き出したあと「保存できましたか？」と聞きます。保存できたことを確かめてから「保存できた」を押してください。押した写真だけが「書き出し済み」になります。<br>大きいときは、ZIPを自動で何個かに分けます（すべて同じフォルダに展開してください）。</p>
+  <div class="esub">
+    <label class="el">撮影の画質（iPadに保存される原本。これから撮る写真に適用）</label>
+    <select id="eqty"></select>
+    <div id="eqinfo" class="einfo"></div>
+    <p class="ehelp">iPadに貯まる原本の画質です。原寸で撮っておけば、あとから何度でも別の画質で書き出せます。</p>
   </div>
-  <div class="ecard">
-    <label class="el">機器ごとの状況</label>
-    <div id="elist"></div>
+  <div class="esub">
+    <label class="el">保存容量</label>
+    <div id="eq" class="einfo"></div>
+    <div class="ebtns"><button id="epurge" class="danger">書き出し済みの写真の原本を iPad から削除</button></div>
+    <p class="ehelp">「保存できた」を押した写真だけが対象です。削除後も確認用の小さな画像と枚数は残るので、撮り忘れの確認には影響しません。</p>
   </div>
+  <div class="esub">
+    <label class="el">チェックのリセット</label>
+    <div class="ebtns"><button id="freset" class="danger">この案件の「完了」「済」をすべて外す</button></div>
+    <p class="ehelp">写真・特記事項・デジカメ記録は消えません。</p>
+  </div>
+  <p class="ehelp" style="text-align:center">ツールの版：<b id="ever"></b>　<span id="eoff"></span></p>
+  <details id="natd" class="ehelp"><summary>不具合の調査用の記録（純正カメラ・写真の表示）</summary><pre id="natlog"></pre></details>
+  </details>
   <div class="ecard" hidden>
     <label class="el">別の iPad への引き継ぎ・複数人の作業を1台にまとめる（バックアップ）</label>
     <div class="ebtns"><button id="ebak" class="sub">この案件をバックアップする（写真の原本ごと）</button></div>
@@ -717,19 +758,6 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
     <label class="el">文字の大きさ</label>
     <div class="seg" id="efz"><button data-fz="1">標準</button><button data-fz="1.15">大</button><button data-fz="1.3">特大</button></div>
   </div>
-  <div class="ecard">
-    <label class="el">チェックのリセット</label>
-    <div class="ebtns"><button id="freset" class="danger">この案件の「完了」「済」をすべて外す</button></div>
-    <p class="ehelp">写真・特記事項・デジカメ記録は消えません。</p>
-  </div>
-  <div class="ecard">
-    <label class="el">保存容量</label>
-    <div id="eq" class="einfo"></div>
-    <div class="ebtns"><button id="epurge" class="danger">書き出し済みの写真の原本を iPad から削除</button></div>
-    <p class="ehelp">「保存できた」を押した写真だけが対象です。削除後も確認用の小さな画像と枚数は残るので、撮り忘れの確認には影響しません。</p>
-  </div>
-  <p class="ehelp" style="text-align:center">ツールの版：<b id="ever"></b>　<span id="eoff"></span></p>
-  <details id="natd" class="ehelp"><summary>不具合の調査用の記録（純正カメラ・写真の表示）</summary><pre id="natlog"></pre></details>
 </section>
 
 <div id="detail">
@@ -801,7 +829,7 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 
 <script>
 const DATA = {"title": "練習用：サンプル浄化センター（架空のデータ）", "practice": true, "assets": [{"no": "S-001", "name": "No.1汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-002", "name": "No.2汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-003", "name": "沈砂池流入ゲート（練習）", "fac": "サンプル浄化センター", "place": "沈砂池棟_1F", "spec": "ステンレス製スライドゲート（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "動作状況", "d1": "", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-004", "name": "1号吐出弁（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "電動バタフライ弁 φ150（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-005", "name": "換気ファン（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_1F_電気室", "spec": "有圧換気扇 φ300（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-006", "name": "No.1雨水ポンプ（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_B1F", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}]};          // 練習用の架空案件。初回起動時に1回だけ案件として登録する
-const BUILD='2026-10-09 19:00', BUILDV='2026-10-09_1900';
+const BUILD='2026-10-09 20:23', BUILDV='2026-10-09_2023';
 const freshST=()=>({items:{},done:{},notes:{},photos:{},exported:{},saved:{},seq:0,dc:{},noteExp:{},cfg:{p:'0',ex:'500'},cfgv:3});
 /* この iPad の設定（案件をまたいで共通） */
 let DEV={user:'', nameInFiles:true, fz:1, camLand:true};
@@ -2075,6 +2103,8 @@ function expInfo(){
   $('#eeinfo').textContent = (!px&&!kb) ? '原本をそのまま入れます　→　ZIP推定 約 '+mb(b) : `写真${n}枚 × 最大${kb}KB　→　ZIP推定 約 ${mb(est)}`;
   const fl=$('#efacl'); fl.style.display = FAC!=='*' ? 'flex':'none';
   $('#efact').textContent = '「'+facName(FAC)+'」だけを書き出す（外すと案件全体）';
+  const wb=$('#ewho'); wb.textContent=DEV.user||'まだ入っていません'; wb.classList.toggle('none',!DEV.user);
+  const sc=$('#escope'), sl=$('#escopel'); sl.textContent='範囲：'+sc.options[sc.selectedIndex].text.replace(/（.*$/,'')+(expNew()?'':'（詳細設定で変更中）'); sl.classList.toggle('alt',!expNew());
   const lim=(PARTMB || (kb? 250 : 300))*MB, np=Math.max(1,Math.ceil(est/lim));
   const w=$('#ewarn'); w.style.display = np>1 ? 'block':'none';
   w.textContent = np>1 ? `大きいので、ZIPを約 ${np} 個に分けて書き出します（1個 ${mb(lim)} まで）。すべて同じフォルダに展開してください。` : '';
@@ -2895,11 +2925,26 @@ $('#ephoto').addEventListener('click',toPhotos);
 
 $('#eshare').addEventListener('click',shareLast);
 $('#ebak').addEventListener('click',doBackup);
-$('#euser').addEventListener('change',e=>{ DEV.user=e.target.value.trim(); DEV.askedUser=1; saveDev(); });
-$('#euname').addEventListener('change',e=>{ DEV.nameInFiles=e.target.checked; saveDev(); });
+$('#euser').addEventListener('change',e=>{ DEV.user=e.target.value.trim(); DEV.askedUser=1; saveDev(); expInfo(); });
+$('#ewhoedit').addEventListener('click',()=>{ $('#edet').open=true; const u=$('#euser'); u.scrollIntoView({block:'center'}); setTimeout(()=>u.focus(),250); });
+$('#euname').addEventListener('change',e=>{ DEV.nameInFiles=e.target.checked; saveDev(); nameEx(); });
+$('#euser').addEventListener('input',nameEx);
+/* 名前を入れるとファイル名がどうなるかの例（入力中もその場で変わる） */
+function nameEx(){
+  const el=$('#euex'); if(!el) return;
+  const u=safe(($('#euser').value||'').trim()), on=$('#euname').checked, t=P? cut(safe(P.title),24) : '案件名';
+  const a=A.find(x=>x.items&&x.items.length)||A[0], it=a&&a.items[0];
+  const item= a&&it ? cut(safe(a.no)+'_'+safe(it.bc||'00')+'-'+safe(it.pc||'00')+'_'+safe(it.p)+'_'+safe(it.k),90) : 'S-001_01-01_本体_発錆・腐食';
+  const pu= on&&u ? '_'+u : '';
+  el.innerHTML='<b>ファイル名の例</b><br>'+
+    'ZIP：<code>'+esc('ストマネ_'+t+(u?'_'+u:'')+'_'+tsName(new Date())+'.zip')+'</code><br>'+
+    '調査記録：<code>'+esc('_調査記録'+(u?'_'+u:'')+'.xlsx')+'</code><br>'+
+    '写真：<code>'+esc('_全景'+pu+'_1.jpg')+'</code>　<code>'+esc(item+pu+'_1.jpg')+'</code>'+
+    (u?'':'<br><span style="color:var(--warn)">名前が空なので、ファイル名に名前が入りません</span>');
+}
 $('#efz').addEventListener('click',e=>{ const b=e.target.closest('[data-fz]'); if(!b) return; DEV.fz=+b.dataset.fz; saveDev(); applyFz(); fzSeg(); });
 function fzSeg(){ $('#efz').querySelectorAll('[data-fz]').forEach(b=>b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.fz-(DEV.fz||1))<0.01))); }
-function settingsInit(){ $('#euser').value=DEV.user||''; $('#euname').checked=DEV.nameInFiles!==false; fzSeg(); }
+function settingsInit(){ $('#euser').value=DEV.user||''; $('#euname').checked=DEV.nameInFiles!==false; fzSeg(); nameEx(); }
 $('#epurge').addEventListener('click',async()=>{
   const ids=Object.keys(ST.photos).filter(id=>ST.exported[id] && !ST.photos[id].x);
   if(!ids.length){ alert('原本を削除できる写真はありません。\n（書き出したあと「保存できた」を押した写真だけが対象です）'); return; }
