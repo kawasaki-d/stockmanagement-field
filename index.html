@@ -412,7 +412,20 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 #camv{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block}
 .cbox.crop #camv{object-fit:cover}
 .cbox.crop{outline:1px solid rgba(255,255,255,.35)}
-#camdesc{position:absolute; left:8px; right:8px; top:8px; font-size:12px; line-height:1.45; background:rgba(0,0,0,.6); color:#fff;
+#camdest{position:absolute; left:8px; top:8px; max-width:calc(100% - 16px); font-size:20px; font-weight:800; line-height:1.3; color:#fff;
+  background:rgba(0,0,0,.62); padding:6px 14px 6px 12px; border-radius:8px; border-left:6px solid #f5d76e; pointer-events:none;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#camdest.z{border-left-color:#3ddc84}
+#camdest.u{border-left-color:#e8963a}
+#camdest small{font-size:12px; font-weight:700; color:#ccc; margin-right:8px}
+#camname{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:90%; text-align:center; pointer-events:none;
+  background:rgba(0,0,0,.72); color:#fff; border:3px solid #f5d76e; border-radius:14px; padding:14px 26px; font-size:30px; font-weight:800; line-height:1.3; opacity:0}
+#camname small{display:block; font-size:15px; color:#f5d76e; font-weight:700}
+#camname.on{animation:cname 2.6s ease-out forwards}
+@keyframes cname{0%{opacity:0; transform:translate(-50%,-50%) scale(.92)}8%{opacity:1; transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0}}
+@media (max-width:600px){ #camdest{font-size:15px} #camname{font-size:20px; padding:10px 16px} }
+@media (prefers-reduced-motion:reduce){ #camname.on{animation:none; opacity:1} }
+#camdesc{position:absolute; left:8px; right:8px; top:56px; font-size:12px; line-height:1.45; background:rgba(0,0,0,.6); color:#fff;
   padding:6px 10px; border-radius:8px; display:none; pointer-events:none}
 #camdesc.on{display:block}
 #camhint{position:absolute; left:50%; bottom:8px; transform:translateX(-50%); font-size:11px; background:rgba(0,0,0,.6); color:#ddd;
@@ -785,7 +798,9 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
     <div class="ctop"><button id="camok">完了</button><div id="camnav"><button id="cnprev" class="cn"></button><b id="camttl"></b><button id="cnnext" class="cn"></button></div><span id="camres"></span><span id="camtag"></span><button id="camsw" aria-label="機器を切り替える">機器 ▾</button></div>
     <div class="cview"><div class="cbox" id="cbox">
       <video id="camv" playsinline muted></video>
+      <div id="camdest"></div>
       <div id="camdesc"></div>
+      <div id="camname"></div>
       <div id="camhint">縦に持ったままでも横長で保存されます（横にすると広く写せます）</div>
       <div id="camerr"></div>
       <div id="camflash"></div>
@@ -829,7 +844,7 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 
 <script>
 const DATA = {"title": "練習用：サンプル浄化センター（架空のデータ）", "practice": true, "assets": [{"no": "S-001", "name": "No.1汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-002", "name": "No.2汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-003", "name": "沈砂池流入ゲート（練習）", "fac": "サンプル浄化センター", "place": "沈砂池棟_1F", "spec": "ステンレス製スライドゲート（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "動作状況", "d1": "", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-004", "name": "1号吐出弁（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "電動バタフライ弁 φ150（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-005", "name": "換気ファン（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_1F_電気室", "spec": "有圧換気扇 φ300（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-006", "name": "No.1雨水ポンプ（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_B1F", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}]};          // 練習用の架空案件。初回起動時に1回だけ案件として登録する
-const BUILD='2026-10-09 20:23', BUILDV='2026-10-09_2023';
+const BUILD='2026-10-12 10:46', BUILDV='2026-10-12_1046';
 const freshST=()=>({items:{},done:{},notes:{},photos:{},exported:{},saved:{},seq:0,dc:{},noteExp:{},cfg:{p:'0',ex:'500'},cfgv:3});
 /* この iPad の設定（案件をまたいで共通） */
 let DEV={user:'', nameInFiles:true, fz:1, camLand:true};
@@ -1332,7 +1347,7 @@ async function camOpen(key, zenkei){
   if(!key && !zenkei) camFirst();                         // 「この機器の撮影を始める」
   else { CAMKEY=key||UKEY(CUR._i); CAMZEN= zenkei===2?2:(zenkei?1:0); }
   CAMSHOTS=0;
-  $('#cam').classList.add('on'); camOriBtn(); camBars(); camCount(); camLast(); camNav();
+  $('#cam').classList.add('on'); camOriBtn(); camBars(); camCount(); camLast(); camNav(); camNameFlash();
   wake(); await camStart(); fitBox();
 }
 /* 撮り始めの位置：全景がまだなら全景 → 銘板がまだなら銘板 → 部品が1つなら最初の部品 → 未分類 */
@@ -1345,6 +1360,10 @@ function camFirst(){
 }
 /* カメラ画面から別の機器へ（映像は止めずに切り替える）。並びは機器一覧と同じ */
 /* 上部の「前の機器」「次の機器」ボタンに名前を出す */
+function camNameFlash(){
+  const n=$('#camname'); n.innerHTML='<small>'+esc(CUR.no)+'</small>'+esc(CUR.name);
+  n.classList.remove('on'); void n.offsetWidth; n.classList.add('on');
+}
 function camNav(){
   const rows=camRows(), i=rows.indexOf(CUR), pv=i>0?rows[i-1]:null, nx=(i>=0&&i<rows.length-1)?rows[i+1]:null;
   $('#camttl').textContent=CUR.no+'　'+CUR.name;
@@ -1370,9 +1389,8 @@ function camSwitch(ai){
   if(!A[ai]) return;
   $('#campk').classList.remove('on');
   if(CUR===A[ai]) return;
-  CUR=A[ai]; camFirst(); CAMSHOTS=0; camNav();
+  CUR=A[ai]; camFirst(); CAMSHOTS=0; camNav(); camNameFlash();
   camBars(); camCount(); camLast();
-  toast(CUR.no+'　'+CUR.name+' に切り替えました',1800);
 }
 function camStep(d){
   const rows=camRows(), i=rows.indexOf(CUR), j=i+d;
@@ -1427,6 +1445,8 @@ function camBars(){
   }
   $('#camtag').textContent = CAMZEN? ZL[CAMZEN] : isU(CAMKEY)? '未分類'
     : isP(CAMKEY)? (g? g.label:'')+' ／ 項目未分類' : (curIt? curIt.p+' ／ '+curIt.k : '');
+  const cd=$('#camdest'); cd.innerHTML='<small>撮影先</small>'+esc($('#camtag').textContent);
+  cd.className = CAMZEN? 'z' : (isU(CAMKEY)||isP(CAMKEY))? 'u' : '';
   const it=CAMZEN?null:curIt, ds=$('#camdesc');
   ds.textContent = it&&it.d1 ? it.k+'：'+it.d1 : ''; ds.classList.toggle('on', !!(it&&it.d1));
   requestAnimationFrame(()=>{ for(const sel of ['#cbar1 .now','#cbar2 .now']){ const n=$(sel); if(n&&n.scrollIntoView) try{ n.scrollIntoView({block:'nearest',inline:'nearest'}); }catch(e){} } });
@@ -1780,8 +1800,26 @@ $('#dbody').addEventListener('click',e=>{
   }
   if(e.target.closest('#dslate')){ slateOpen(); return; }
 });
-$('#fin').addEventListener('click',()=>{ if(ST.done[CUR._i])delete ST.done[CUR._i]; else ST.done[CUR._i]=1; save(); dfoot(); $('#dask').classList.remove('on'); });
-$('#daskok').addEventListener('click',()=>{ ST.done[CUR._i]=1; save(); dfoot(); $('#dask').classList.remove('on'); toast('この機器を完了にしました'); });
+/* 完了にする前に、全景・銘板の写真があるか確かめる。無ければ「撮影する／このまま完了／やめる」を選んでもらう */
+async function okToFinish(ai, from){
+  const ps=photosOf(ai), miss=[1,2].filter(z=>!ps.some(id=>zOf(ST.photos[id])===z)).map(z=>ZL[z]);
+  if(!miss.length) return true;
+  const a=A[ai], dc=dcOf(ai).length;
+  const r=await dlg(miss.join('・')+'の写真がありません',
+    `<p>「${esc(a.no)}　${esc(a.name)}」は、<b>${miss.join('と')}</b>の写真がまだありません。</p>`+
+    (dc?'<p class="ehelp">デジカメで撮った場合は「このまま完了にする」で大丈夫です。</p>':''),
+    [{id:'cam',label:miss.join('・')+'を撮影する'},{id:'ok',label:'このまま完了にする',cls:'sub'},{id:'x',label:'やめる',cls:'sub'}]);
+  if(r==='cam'){ CUR=a; CAMFROM=from; camOpen(null,false); return false; }
+  return r==='ok';
+}
+$('#fin').addEventListener('click',async()=>{
+  const ai=CUR._i;
+  if(ST.done[ai]) delete ST.done[ai];
+  else { $('#dask').classList.remove('on'); if(!(await okToFinish(ai,'detail'))) return; ST.done[ai]=1; }
+  save(); dfoot(); $('#dask').classList.remove('on'); });
+$('#daskok').addEventListener('click',async()=>{ const ai=CUR._i; $('#dask').classList.remove('on');
+  if(!(await okToFinish(ai,'detail'))) return;
+  ST.done[ai]=1; save(); dfoot(); toast('この機器を完了にしました'); });
 $('#daskx').addEventListener('click',()=>$('#dask').classList.remove('on'));
 $('#back').addEventListener('click',close_);
 $('#list').addEventListener('click',e=>{
@@ -1790,7 +1828,9 @@ $('#list').addEventListener('click',e=>{
   const cm=e.target.closest('[data-cam]');
   if(cm){ CUR=A[+cm.dataset.cam]; CAMFROM='list'; camOpen(null,false); return; }
   const dn=e.target.closest('[data-done]');
-  if(dn){ const i=+dn.dataset.done; if(ST.done[i])delete ST.done[i]; else ST.done[i]=1; save(); list(); return; }
+  if(dn){ const i=+dn.dataset.done;
+    if(ST.done[i]){ delete ST.done[i]; save(); list(); return; }
+    okToFinish(i,'list').then(ok=>{ if(ok){ ST.done[i]=1; save(); list(); } }); return; }
   const c=e.target.closest('[data-i]'); if(c)open_(+c.dataset.i);
 });
 $('#q').addEventListener('input',list);
@@ -2021,7 +2061,8 @@ function exportPlan(targets){
     { const ps=photosOf(a._i), zc=z=>ps.filter(id=>zOf(ST.photos[id])===z).length, nt=ST.notes&&ST.notes[a._i];
       mach.push([...fc,a.no,a.name,a._hz,ps.length,zc(1)||'なし',zc(2)||'なし',iv?ionTxt(iv):'',ST.done[a._i]?'完了':'',(nt&&((nt.t||'').trim()||(nt.s||[]).length))?'あり':'']); }
     dcOf(a._i).forEach(t=>rec.push([...fc,a.no,a.name,'','','','（デジカメ側の写真）',stamp(t),'','デジカメ（カチンコ表示）']));
-    groupsOf(a).forEach(x=>{ if(!partDone(x)) mis.push([...fc,a.no,a.name,a._hz,bb(x.b),x.p,partPhotos(a._i,x),'部品が未済']); });
+    { const ps=photosOf(a._i); [1,2].forEach(z=>{ if(!ps.some(id=>zOf(ST.photos[id])===z)) mis.push([...fc,a.no,a.name,a._hz,'','',0,ZL[z]+'の写真なし']); }); }
+    groupsOf(a).forEach(x=>{ if(!partPhotos(a._i,x)) mis.push([...fc,a.no,a.name,a._hz,bb(x.b),x.p,0,'部品の写真なし']); });
     if(!ST.done[a._i]) mis.push([...fc,a.no,a.name,a._hz,'','',nPhotos(a._i),'機器が未完了']);
     if(g.ents.length) groups.push(g);
   }
