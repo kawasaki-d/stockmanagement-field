@@ -114,6 +114,9 @@ body.m-fac #stats, body.m-fac #bar, body.m-fac #tabs, body.m-fac .sep, body.m-fa
 }
 input[type=search]::-webkit-search-cancel-button,
 input[type=search]::-webkit-search-decoration{-webkit-appearance:none; appearance:none}
+#qnum{flex:none; min-width:52px; min-height:var(--tap); margin-right:6px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel); color:var(--muted);
+  font-size:calc(14px*var(--fz,1)); font-weight:800; letter-spacing:.02em}
+#qnum[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff}
 #qc{position:absolute; right:4px; top:50%; transform:translateY(-50%);
   width:38px; height:38px; border:0; border-radius:9px; background:var(--line2);
   color:var(--muted); font-size:calc(15px*var(--fz,1)); line-height:1; display:none}
@@ -726,6 +729,7 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 <section class="view on" id="lv">
   <div class="tools">
     <span class="qbox" id="qbox">
+      <button id="qnum" aria-pressed="false" aria-label="数字のキーボードで検索">123</button>
       <input type="search" id="q" placeholder="機器名・番号・設置場所で検索（半角/全角どちらでも）" autocomplete="off">
       <button id="qc" aria-label="検索をクリア">✕</button>
     </span>
@@ -927,11 +931,11 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 
 <script>
 const DATA = {"title": "練習用：サンプル浄化センター（架空のデータ）", "practice": true, "assets": [{"no": "S-001", "name": "No.1汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-002", "name": "No.2汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-003", "name": "沈砂池流入ゲート（練習）", "fac": "サンプル浄化センター", "place": "沈砂池棟_1F", "spec": "ステンレス製スライドゲート（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "動作状況", "d1": "", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-004", "name": "1号吐出弁（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "電動バタフライ弁 φ150（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-005", "name": "換気ファン（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_1F_電気室", "spec": "有圧換気扇 φ300（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-006", "name": "No.1雨水ポンプ（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_B1F", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}]};          // 練習用の架空案件。初回起動時に1回だけ案件として登録する
-const BUILD='2026-10-16 13:10', BUILDV='2026-10-16_1310';
+const BUILD='2026-10-16 16:47', BUILDV='2026-10-16_1647';
 const freshST=()=>({items:{},done:{},notes:{},photos:{},exported:{},saved:{},seq:0,dc:{},noteExp:{},cfg:{p:'0',ex:'500'},cfgv:3});
 /* この iPad の設定（案件をまたいで共通） */
 let DEV={user:'', nameInFiles:true, fz:1, camLand:true};
-async function loadDev(){ try{ DEV=Object.assign(DEV, (await get('meta','dev'))||{}); }catch(e){} applyFz(); }
+async function loadDev(){ try{ DEV=Object.assign(DEV, (await get('meta','dev'))||{}); }catch(e){} applyFz(); try{ qNumApply(); }catch(e){} }
 function saveDev(){ put('meta','dev',DEV).catch(()=>{}); }
 function applyFz(){ document.documentElement.style.setProperty('--fz', '1'); }      // 文字の大きさは標準で固定（2026-10-09）
 let P=null, A=[], TOT=0, FAC='*';
@@ -1102,7 +1106,7 @@ const zMiss=ai=>['全景','銘板'].filter((L,i)=>!(ZN[ai]&&ZN[ai][i+1]));
 /* 形式・仕様は1行に省略。末尾の「設置YYYY年（経過N年）」は切れないよう先頭に出す */
 function specLine(sp){ if(!sp) return '';
   const m=String(sp).match(/設置\s*\d{4}\s*年(?:\s*[（(]\s*経過\s*\d+\s*年\s*[）)])?/);
-  const rest= m? String(sp).replace(m[0],'').replace(/\s{2,}/g,' ').trim() : sp;
+  const rest= m? String(sp).replace(m[0],'').replace(/(\s*／\s*)+/g,' ／ ').replace(/^\s*／\s*|\s*／\s*$/g,'').replace(/\s{2,}/g,' ').trim() : sp;
   return '<span class="spc">'+(m?'<b>'+esc(m[0])+'</b> ':'')+esc(rest)+'</span>'; }
 function card(a, n){
   const d=!!ST.done[a._i], dc=dcOf(a._i).length;
@@ -1997,6 +2001,10 @@ $('#list').addEventListener('click',e=>{
 });
 $('#q').addEventListener('input',list);
 $('#qc').addEventListener('click',()=>{ $('#q').value=''; list(); $('#q').focus(); });
+/* 「123」：検索のキーボードを数字の画面で開く（資産番号で探すとき）。iPad ごとに覚える（10/16 河﨑さん要望） */
+function qNumApply(){ const on=!!DEV.qnum, q=$('#q'); q.inputMode= on?'numeric':'text'; $('#qnum').setAttribute('aria-pressed',String(on));
+  q.placeholder= on? '番号で検索（数字の一部でも出ます）' : '機器名・番号・設置場所で検索（半角/全角どちらでも）'; }
+$('#qnum').addEventListener('click',()=>{ DEV.qnum=!DEV.qnum; saveDev(); qNumApply(); const q=$('#q'); q.blur(); q.focus(); });   // iOS は押した操作の中で focus しないとキーボードが出ないので、その場で開き直す
 $('#q').addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('#q').value=''; list(); } });
 ['fu','fd','fp1','fp0','fzn'].forEach(id=>$('#'+id).addEventListener('click',e=>{
   const b=e.currentTarget; b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'); list();
