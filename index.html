@@ -136,6 +136,8 @@ input[type=search]::-webkit-search-decoration{-webkit-appearance:none; appearanc
 .card .r1{display:flex; align-items:center; gap:7px; flex-wrap:wrap}
 .card .no{font-size:calc(11px*var(--fz,1)); color:var(--muted); font-variant-numeric:tabular-nums}
 .card .nm{display:block; font-size:calc(16px*var(--fz,1)); font-weight:700; line-height:1.3; margin:2px 0 3px}
+.card .spc b{font-weight:700; color:var(--accent)}
+.card .spc{display:block; font-size:calc(12px*var(--fz,1)); color:var(--txt); opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:-1px 0 3px}
 .card .mt{display:block; font-size:calc(11px*var(--fz,1)); color:var(--muted)}
 .hzb{font-size:calc(10px*var(--fz,1)); font-weight:700; padding:2px 7px; border-radius:4px; white-space:nowrap}
 .hzb.jg{background:var(--line2); color:var(--muted)}
@@ -167,7 +169,8 @@ input[type=search]::-webkit-search-decoration{-webkit-appearance:none; appearanc
 .chip.ph0[aria-pressed="true"]{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
 /* 機器ごとの写真一覧 */
 #gal{position:fixed; inset:0; z-index:290; background:var(--bg); display:none; overflow-y:auto; -webkit-overflow-scrolling:touch}
-#gal.on{display:block}
+#gal.on{display:flex; flex-direction:column}
+#galb{flex:1 0 auto}
 #galh{position:sticky; top:0; z-index:2; background:var(--panel); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px;
   padding:10px max(14px,env(safe-area-inset-right)) 10px max(14px,env(safe-area-inset-left))}
 #galh .t{flex:1; min-width:0}
@@ -180,7 +183,48 @@ input[type=search]::-webkit-search-decoration{-webkit-appearance:none; appearanc
 #galb h5 i{font-style:normal; font-weight:600; margin-left:6px}
 .ggrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px}
 .gtile{position:relative; padding:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#000; aspect-ratio:4/3}
-.gtile img{width:100%; height:100%; object-fit:cover; display:block}
+.gtile img{width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; pointer-events:none}
+.gtile{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation}
+#galh #galsel[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff}
+#gal.selm .gtile::after{content:''; position:absolute; top:6px; left:6px; width:26px; height:26px; border-radius:50%; border:2px solid #fff; background:rgba(0,0,0,.35); box-sizing:border-box}
+#gal.selm .gtile.sel::after{content:'✓'; background:var(--accent); color:#fff; font-size:15px; font-weight:800; line-height:22px; text-align:center}
+#gal.selm .gtile.sel{outline:4px solid var(--accent); outline-offset:-4px}
+#gal .gtile.drag{opacity:.35}
+#galb h5{display:flex; align-items:center; gap:8px; padding:4px 6px; margin-left:-6px; margin-right:-6px; border-radius:6px}
+#galb h5 .gsa{display:none; margin-left:auto; min-height:32px; padding:0 10px; border-radius:6px; border:1px solid var(--line); background:var(--panel); color:var(--accent); font-size:12px; font-weight:700}
+#gal.selm #galb h5 .gsa{display:inline-block}
+#gal.dragging #galb h5{outline:2px dashed var(--line)}
+#galb h5.drop{background:var(--accent-bg); outline:3px solid var(--accent)!important; color:var(--accent)}
+#galbar{position:sticky; bottom:0; z-index:3; display:none; gap:8px; align-items:center; flex-wrap:wrap; background:var(--panel); border-top:1px solid var(--line);
+  padding:10px max(14px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left))}
+#gal.selm #galbar{display:flex}
+#galn{flex:1; min-width:160px; font-weight:700; font-size:calc(14px*var(--fz,1))}
+#galn small{display:block; font-weight:500; color:var(--muted); font-size:calc(11px*var(--fz,1))}
+#galbar button{min-height:var(--tap); padding:0 16px; border-radius:var(--r); border:1px solid var(--line); background:var(--panel); color:var(--txt); font-weight:700; font-size:calc(14px*var(--fz,1))}
+@media (max-width:600px){ #galn small{display:none} #galn{min-width:100%} #galbar button{flex:1; padding:0 8px} }
+#galbar #galmv{background:var(--accent); border-color:var(--accent); color:#fff}
+#galbar #galdel{border-color:var(--warn); color:var(--warn)}
+#galbar button:disabled{opacity:.4}
+#gghost{position:fixed; left:0; top:0; z-index:20; display:none; pointer-events:none; width:96px; height:72px; border-radius:8px; border:2px solid #fff;
+  background:#333 center/cover; box-shadow:0 8px 24px rgba(0,0,0,.45); transform:translate(-50%,-70%)}
+#gghost b{position:absolute; right:-11px; top:-11px; min-width:26px; height:26px; line-height:26px; border-radius:13px; background:var(--accent); color:#fff; font-size:13px; text-align:center; padding:0 6px}
+#mvs .mbox{width:min(600px,100%); max-height:90vh; display:flex; flex-direction:column}
+.mvm{display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; background:var(--bg)}
+.mvm span{flex:1; min-width:0; font-weight:700; font-size:calc(14px*var(--fz,1))}
+.mvm span small{display:block; color:var(--muted); font-weight:500; font-size:calc(11px*var(--fz,1))}
+.mvm button{min-height:40px; padding:0 12px; border-radius:var(--r); border:1px solid var(--accent); background:var(--panel); color:var(--accent); font-weight:700; flex:none}
+#mvl{flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; margin-bottom:10px}
+#mvl .mvg{margin:10px 0 4px; font-size:calc(12px*var(--fz,1)); color:var(--muted); font-weight:700}
+#mvl .mvb{display:flex; flex-wrap:wrap; gap:6px}
+#mvl .mvb button{min-height:44px; padding:6px 12px; border-radius:var(--r); border:1px solid var(--line); background:var(--panel); color:var(--txt); font-size:calc(14px*var(--fz,1)); font-weight:600; text-align:left}
+#mvl .mvb button.pu{color:var(--warn); border-color:var(--warn)}
+#mvl .mvb button.zz{color:var(--ok); border-color:var(--ok); font-weight:800}
+#mvl .mvb button.cur{outline:3px solid var(--accent)}
+#mvl input[type=search]{width:100%; min-height:44px; font-size:16px; padding:0 12px; border-radius:var(--r); border:1px solid var(--line); background:var(--bg); color:var(--txt); margin-bottom:8px; box-sizing:border-box}
+#mvl .mva{display:block; width:100%; text-align:left; margin:5px 0; padding:8px 12px; border-radius:var(--r); border:1px solid var(--line); background:var(--panel); color:var(--txt)}
+#mvl .mva.cur{border-color:var(--accent); background:var(--accent-bg)}
+#mvl .mva small{display:block; font-size:calc(11px*var(--fz,1)); color:var(--muted)}
+#mvl .mva b{font-size:calc(15px*var(--fz,1))}
 .gtile span{position:absolute; left:0; right:0; bottom:0; font-size:calc(11px*var(--fz,1)); color:#fff; background:rgba(0,0,0,.55); padding:3px 6px; text-align:left;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .gtile .ex{position:absolute; top:5px; right:5px; left:auto; bottom:auto; background:var(--ok); border-radius:4px; padding:1px 5px; font-size:calc(10px*var(--fz,1))}
@@ -200,6 +244,13 @@ input[type=search]::-webkit-search-decoration{-webkit-appearance:none; appearanc
 #back{min-width:var(--tap); min-height:var(--tap); border:1px solid var(--line); background:var(--bg); border-radius:var(--r); font-size:calc(18px*var(--fz,1)); flex:none}
 #dtitle{font-size:calc(18px*var(--fz,1)); font-weight:700; line-height:1.25}
 #dmeta{font-size:calc(11px*var(--fz,1)); color:var(--muted); margin-top:3px; word-break:break-all}
+#dspec{font-size:calc(13px*var(--fz,1)); margin-top:3px; line-height:1.4; word-break:break-all}
+#dspec:empty{display:none}
+#dhead .row1 > div{flex:1; min-width:0}
+.dnav{display:flex; gap:8px; margin-top:8px}
+.dnav button{flex:1 1 0; min-width:0; min-height:40px; border-radius:var(--r); border:1px solid var(--line); background:var(--bg); color:var(--txt);
+  font-size:calc(13px*var(--fz,1)); font-weight:700; padding:0 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.dnav button:disabled{opacity:.35}
 #dbody{padding:14px max(14px,env(safe-area-inset-right)) 100px max(14px,env(safe-area-inset-left))}
 #dhead.fin{background:var(--ok-bg); border-bottom:2px solid var(--ok)}
 #dhead.fin #dtitle{color:var(--ok)}
@@ -352,6 +403,9 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 .ph b{font-size:calc(10px*var(--fz,1)); color:var(--muted); font-weight:700}
 .shot{flex:none; align-self:center; width:44px; height:38px; margin-right:3px; border-radius:8px;
   border:1px solid var(--accent); background:var(--accent-bg); color:var(--accent); font-size:calc(15px*var(--fz,1))}
+.zen.un{border-color:var(--warn); background:var(--warn-bg)}
+.zen.un .zt b{color:var(--warn)}
+.unb{flex:none; min-height:40px; padding:0 14px; border-radius:8px; border:1px solid var(--warn); background:var(--panel); color:var(--warn); font-size:calc(14px*var(--fz,1)); font-weight:700}
 .zen{display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line);
   border-radius:var(--r); padding:10px 12px; margin-bottom:12px}
 .zen .zt{flex:1; min-width:0}
@@ -371,6 +425,9 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 #dslate{flex:0 0 170px; min-height:54px; border-radius:var(--r); border:1px solid var(--cam); background:var(--cam-bg);
   color:var(--cam); font-size:calc(14px*var(--fz,1)); font-weight:700; line-height:1.25}
 #dslate small{display:block; font-size:calc(11px*var(--fz,1)); font-weight:600; opacity:.85}
+#dgal,#dlibl{flex:1; min-height:48px; border-radius:var(--r); border:1px solid var(--accent); background:var(--panel); color:var(--accent);
+  font-size:calc(14px*var(--fz,1)); font-weight:700; line-height:1.25; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; cursor:pointer; text-align:center; padding:4px 8px}
+#dgal small,#dlibl small{display:block; font-size:calc(11px*var(--fz,1)); font-weight:600; opacity:.85}
 #startcam{display:block; flex:1; min-height:54px; margin:0; border-radius:var(--r);
   border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:calc(15px*var(--fz,1)); font-weight:700}
 
@@ -423,6 +480,8 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 #camname small{display:block; font-size:15px; color:#f5d76e; font-weight:700}
 #camname.on{animation:cname 2.6s ease-out forwards}
 @keyframes cname{0%{opacity:0; transform:translate(-50%,-50%) scale(.92)}8%{opacity:1; transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0}}
+@media (max-width:600px){ #camtag{display:none} }                 /* 狭い画面では撮影先は左上の大きい表示だけにする */
+@media (max-height:500px) and (orientation:landscape){ #camtag{display:none} }
 @media (max-width:600px){ #camdest{font-size:15px} #camname{font-size:20px; padding:10px 16px} }
 @media (prefers-reduced-motion:reduce){ #camname.on{animation:none; opacity:1} }
 #camdesc{position:absolute; left:8px; right:8px; top:56px; font-size:12px; line-height:1.45; background:rgba(0,0,0,.6); color:#fff;
@@ -440,7 +499,18 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
   line-height:1.25; padding:4px; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer}
 .cbtn[hidden]{display:none}
 .cbtn[aria-pressed="true"]{background:#f5d76e; color:#222; border-color:#f5d76e}
-#camnext{background:#22406e; border-color:#3d6ab0; color:#fff; min-height:48px; font-size:13px}
+#camfin{background:#1a7f4b; border-color:#2fb36d; color:#fff; min-height:48px; font-size:16px; font-weight:800}
+.ctopg{display:flex; flex-direction:column; align-items:center; gap:10px; width:100%}
+.cbtns{display:grid; grid-template-columns:1fr 1fr; gap:6px; width:100%}
+#camnat{grid-column:1/3}
+.cbtn.ico{padding:2px}
+#camlast{cursor:pointer}
+.crail{position:relative}
+#camzoom{position:absolute; left:50%; bottom:40px; transform:translateX(-50%); display:flex; gap:6px; padding:5px; border-radius:22px; background:rgba(0,0,0,.45); z-index:3}
+#camzoom:empty{display:none}
+#camzoom button{min-width:44px; height:34px; border-radius:17px; border:0; background:rgba(40,40,40,.85); color:#fff; font-size:13px; font-weight:800; padding:0 10px}
+#camzoom button[aria-pressed="true"]{background:#f5d76e; color:#111}
+#camv{transform-origin:center center}
 #camlast{width:64px; height:64px; border-radius:9px; border:2px solid #555; background:#222 center/cover; position:relative; flex:none}
 #camlast.pop{animation:pop .32s ease-out}
 @keyframes pop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
@@ -475,10 +545,11 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
   .cwrap{grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto auto auto; grid-template-areas:"top" "view" "s1" "s2" "rail"}
   .crail{flex-direction:row; border-left:0; border-top:1px solid #222;
     padding:10px max(14px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left))}
-  .cbtns{width:112px}
+  .ctopg{width:auto; flex-direction:row; gap:8px}
+  .cbtns{width:132px}
   .cbtn{min-height:32px; font-size:11px}
-  #camnext{min-height:40px}
-  #camsh{width:74px; height:74px; border-width:5px}
+  #camfin{min-height:54px; width:60px; font-size:14px}
+      #camsh{width:74px; height:74px; border-width:5px}
   #camlast{width:54px; height:54px}
   #cam .strip,#cam .strip.lv2{height:48px; padding-bottom:0}
   #camtag{max-width:48%}
@@ -500,8 +571,9 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
   .crail{padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); padding-right:max(6px,env(safe-area-inset-right)); gap:6px}
   .cbtns{gap:5px}
   .cbtn{min-height:30px; font-size:10px}
-  #camnext{min-height:36px; font-size:11px}
-  #camsh{width:64px; height:64px; border-width:5px}
+  .ctopg{gap:6px}
+  #camfin{min-height:38px; font-size:13px}
+    #camsh{width:64px; height:64px; border-width:5px}
   #camlast{width:46px; height:46px}
   #camres{display:none}
 }
@@ -780,9 +852,11 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
       <div>
         <div id="dtitle"></div>
         <div id="dmeta"></div>
+        <div id="dspec"></div>
         <span class="fbadge">✓　調査完了</span>
       </div>
     </div>
+    <div class="dnav"><button id="dprev"></button><button id="dnext"></button></div>
   </div>
   <div id="dbody"></div>
   <div id="dask"><span>すべての部品が「済」になりました。この機器を完了にしますか？</span><button id="daskok">完了にする</button><button id="daskx" class="sub">あとで</button></div>
@@ -795,24 +869,27 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 
 <div id="cam">
   <div class="cwrap">
-    <div class="ctop"><button id="camok">完了</button><div id="camnav"><button id="cnprev" class="cn"></button><b id="camttl"></b><button id="cnnext" class="cn"></button></div><span id="camres"></span><span id="camtag"></span><button id="camsw" aria-label="機器を切り替える">機器 ▾</button></div>
+    <div class="ctop"><button id="camok">閉じる</button><div id="camnav"><button id="cnprev" class="cn"></button><b id="camttl"></b><button id="cnnext" class="cn"></button></div><span id="camres"></span><span id="camtag"></span><button id="camsw" aria-label="機器を切り替える">機器 ▾</button></div>
     <div class="cview"><div class="cbox" id="cbox">
       <video id="camv" playsinline muted></video>
       <div id="camdest"></div>
       <div id="camdesc"></div>
       <div id="camname"></div>
+      <div id="camzoom"></div>
       <div id="camhint">縦に持ったままでも横長で保存されます（横にすると広く写せます）</div>
       <div id="camerr"></div>
       <div id="camflash"></div>
     </div></div>
     <div class="crail">
-      <div id="camlast"><span id="camn"></span></div>
+      <div class="ctopg">
+        <div id="camlast" role="button" aria-label="この機器の写真一覧"><span id="camn"></span></div>
+        <button id="camfin" class="cbtn">完了</button>
+      </div>
       <button id="camsh" aria-label="撮影"></button>
       <div class="cbtns">
-        <button id="camnext" class="cbtn">次の項目 ▶</button>
-        <button id="camtorch" class="cbtn" aria-pressed="false" hidden>ライト</button>
-        <button id="camori" class="cbtn" aria-pressed="true">横長固定</button>
-        <label id="camnat" class="cbtn">純正カメラで撮る<input type="file" accept="image/*" capture="environment" id="camfile" class="offscreen"></label>
+        <button id="camtorch" class="cbtn" aria-pressed="false">ライト</button>
+        <button id="camflip" class="cbtn ico" aria-label="前と後ろのカメラを切り替える"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5a2.5 2.5 0 0 1 2.5-2.5h3l2-3h9l2 3h3a2.5 2.5 0 0 1 2.5 2.5v13a2.5 2.5 0 0 1-2.5 2.5h-19A2.5 2.5 0 0 1 4 24.5z"/><path d="M11 17a5 5 0 0 1 9.2-2.6"/><path d="M20.6 11.6v3.2h-3.2"/><path d="M21 19.5a5 5 0 0 1-9.2 2.6"/><path d="M11.4 25v-3.2h3.2"/></svg></button>
+        <label id="camnat" class="cbtn">純正カメラ<input type="file" accept="image/*" capture="environment" id="camfile" class="offscreen"></label>
       </div>
     </div>
     <div class="strip" id="cbar1"></div>
@@ -830,7 +907,13 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
   <div class="s7" id="sl7"></div>
 </div>
 <div id="gal"><div id="galh"><div class="t"><b id="galt"></b><small id="gals"></small></div>
-  <button id="galopen">この機器を開く</button><button id="galx">✕ 閉じる</button></div><div id="galb"></div></div>
+  <button id="galsel" aria-pressed="false">選ぶ</button><button id="galopen">この機器を開く</button><button id="galx">✕ 閉じる</button></div><div id="galb"></div>
+  <div id="galbar"><span id="galn"></span><button id="galall">全部選ぶ</button><button id="galmv">移動先を選ぶ</button><button id="galdel">削除</button></div>
+  <div id="gghost"><b></b></div></div>
+<div id="mvs" class="modal"><div class="mbox"><h4 id="mvt"></h4>
+  <div class="mvm"><span id="mvmn"></span><button id="mvmc">別の機器へ ▾</button></div>
+  <div id="mvl"></div>
+  <div class="dbtns"><button id="mvx" class="sub">やめる</button></div></div></div>
 <div id="pv2"><div class="pv2in">
   <div class="pv2top"><button id="vclose">✕　閉じる</button><span id="pv2n"></span></div>
   <div class="pv2wrap" id="pv2wrap"><img id="pv2img" alt="" draggable="false"><button class="pvnav" id="vprev" aria-label="前の写真">‹</button><button class="pvnav" id="vnext" aria-label="次の写真">›</button></div>
@@ -844,7 +927,7 @@ table.pl td.gb,table.pl td.gp{font-weight:600; background:#f6f7f9}
 
 <script>
 const DATA = {"title": "練習用：サンプル浄化センター（架空のデータ）", "practice": true, "assets": [{"no": "S-001", "name": "No.1汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-002", "name": "No.2汚水ポンプ（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-003", "name": "沈砂池流入ゲート（練習）", "fac": "サンプル浄化センター", "place": "沈砂池棟_1F", "spec": "ステンレス製スライドゲート（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（設備）", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "動作状況", "d1": "", "o1": "5;4;3;2;1", "o2": ""}]}, {"no": "S-004", "name": "1号吐出弁（練習）", "fac": "サンプル浄化センター", "place": "ポンプ棟_B1F_ポンプ室", "spec": "電動バタフライ弁 φ150（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-005", "name": "換気ファン（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_1F_電気室", "spec": "有圧換気扇 φ300（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "銘板", "d1": "銘板（型式・製造番号）を撮影", "o1": "", "o2": ""}, {"hz": "事後", "b": "部位全部", "bc": "01", "p": "全体", "pc": "01", "k": "特記箇所", "d1": "錆・損傷など特筆すべき箇所を撮影", "o1": "", "o2": ""}]}, {"no": "S-006", "name": "No.1雨水ポンプ（練習）", "fac": "サンプルポンプ場", "place": "ポンプ場_B1F", "spec": "水中汚水ポンプ φ150 3.7kW（架空の仕様）", "ki": "", "tanto": "", "items": [{"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "本体ケーシング", "pc": "01", "k": "変形・損傷", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "羽根車", "pc": "02", "k": "摩耗", "d1": "点検口から見える範囲（練習用）", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "発錆・腐食", "d1": "", "o1": "無;小;中;大", "o2": "無;少;中;多"}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "振動（がたつき）", "d1": "測定：両振幅50μm以下（練習用の値）", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "異音", "d1": "", "o1": "5;4;3;2;1", "o2": ""}, {"hz": "状態（部品）", "b": "", "bc": "01", "p": "電動機", "pc": "03", "k": "電流値", "d1": "定格電流は操作盤で確認する（練習用）", "o1": "5;4;3;2;1", "o2": ""}]}]};          // 練習用の架空案件。初回起動時に1回だけ案件として登録する
-const BUILD='2026-10-12 10:46', BUILDV='2026-10-12_1046';
+const BUILD='2026-10-16 11:36', BUILDV='2026-10-16_1136';
 const freshST=()=>({items:{},done:{},notes:{},photos:{},exported:{},saved:{},seq:0,dc:{},noteExp:{},cfg:{p:'0',ex:'500'},cfgv:3});
 /* この iPad の設定（案件をまたいで共通） */
 let DEV={user:'', nameInFiles:true, fz:1, camLand:true};
@@ -970,7 +1053,7 @@ function initProject(p){
     const h=[...new Set(a.items.map(x=>x.hz).filter(Boolean))];
     a._hz = h.join('・') || '—';                                       // 保全区分（混在時は並べて表示）
     a._flat = a.items.every(x=>x.b==='部位全部' && x.p==='全体');        // 部位が分かれていない＝一覧だけで判断できる
-    a._q = norm([a.name,a.no,a.ki,a.sc,facName(a.fac),a.place].join(' '));
+    a._q = norm([a.name,a.no,a.ki,a.sc,facName(a.fac),a.place,a.spec||''].join(' '));
   });
   TOT=A.reduce((n,a)=>n+a.items.length,0);
   /* 保全区分の絞り込みボタンは案件ごとに作る */
@@ -1016,6 +1099,11 @@ function list(){
 }
 let ZN={};
 const zMiss=ai=>['全景','銘板'].filter((L,i)=>!(ZN[ai]&&ZN[ai][i+1]));
+/* 形式・仕様は1行に省略。末尾の「設置YYYY年（経過N年）」は切れないよう先頭に出す */
+function specLine(sp){ if(!sp) return '';
+  const m=String(sp).match(/設置\s*\d{4}\s*年(?:\s*[（(]\s*経過\s*\d+\s*年\s*[）)])?/);
+  const rest= m? String(sp).replace(m[0],'').replace(/\s{2,}/g,' ').trim() : sp;
+  return '<span class="spc">'+(m?'<b>'+esc(m[0])+'</b> ':'')+esc(rest)+'</span>'; }
 function card(a, n){
   const d=!!ST.done[a._i], dc=dcOf(a._i).length;
   const any=n||dc||a.items.some(i=>st(i._k));
@@ -1031,6 +1119,7 @@ function card(a, n){
     <button class="cmain" data-i="${a._i}">
       <span class="r1"><span class="no">${esc(a.no)}</span><span class="hzb ${hzc}">${esc(a._hz)}</span>${a.tanto?'<span class="hzb jg">担当 '+esc(a.tanto)+'</span>':''}${noteBadge(a._i)}${n? zMiss(a._i).map(L=>'<span class="hzb zmiss">'+L+'なし</span>').join('') : ''}${ionBadge(a._i)}${dc?'<span class="hzb" style="background:var(--cam-bg);color:var(--cam)">デジカメ</span>':''}</span>
       <span class="nm">${esc(a.name)}</span>
+      ${specLine(a.spec)}
       ${body}
     </button>
     <span class="cright">
@@ -1291,19 +1380,49 @@ let TORCHKEEP=false, CAMTOK=0, NATIVE=false, CAMSTREAM=null, CAMKEY=null, CAMZEN
 const camOn=()=>$('#cam').classList.contains('on');
 async function wake(){ try{ if('wakeLock' in navigator && !WL){ WL=await navigator.wakeLock.request('screen'); WL.addEventListener('release',()=>WL=null);} }catch(e){} }
 function unwake(){ try{ if(WL) WL.release(); }catch(e){} WL=null; }
+/* レンズ（超広角・広角・望遠）と前後のカメラ、デジタルズーム */
+let CAMFACE='environment', CAMDEV=null, CAMZOOMV=1, LENSES=[];
+async function camLenses(){
+  LENSES=[];
+  try{
+    const ds=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput' && d.label);
+    const pick=re=>ds.find(d=>re.test(d.label));
+    const ultra=pick(/超広角|ultra ?wide/i), tele=pick(/望遠|telephoto/i);
+    const wide=ds.find(d=>/背面|back|rear/i.test(d.label) && !/超広角|ultra|望遠|tele|デュアル|dual|トリプル|triple/i.test(d.label));
+    if(ultra) LENSES.push({k:'u', id:ultra.deviceId, t:'0.5x'});
+    if(wide)  LENSES.push({k:'w', id:wide.deviceId, t:'1x'});
+    if(tele)  LENSES.push({k:'t', id:tele.deviceId, t:'望遠'});
+  }catch(e){}
+  zoomBar();
+}
+function zoomBar(){
+  const el=$('#camzoom'); if(!el) return;
+  if(CAMFACE!=='environment'){ el.innerHTML=''; return; }
+  const cur=LENSES.find(l=>l.id===CAMDEV) || LENSES.find(l=>l.k==='w');
+  const b=[];
+  LENSES.filter(l=>l.k==='u').forEach(l=>b.push(`<button data-lens="${l.id}" aria-pressed="${cur===l}">${l.t}</button>`));
+  const onWide = !cur || cur.k==='w';
+  b.push(`<button data-zoom="1" aria-pressed="${onWide && CAMZOOMV===1}">1x</button>`);
+  b.push(`<button data-zoom="2" aria-pressed="${onWide && CAMZOOMV===2}">2x</button>`);
+  LENSES.filter(l=>l.k==='t').forEach(l=>b.push(`<button data-lens="${l.id}" aria-pressed="${cur===l}">${l.t}</button>`));
+  if(CAMZOOMV!==1 && CAMZOOMV!==2) b.push(`<button aria-pressed="true" disabled>${CAMZOOMV.toFixed(1)}x</button>`);
+  el.innerHTML=b.join('');
+}
+function setZoom(z){ CAMZOOMV=Math.max(1,Math.min(4,Math.round(z*10)/10)); $('#camv').style.transform= CAMZOOMV>1? 'scale('+CAMZOOMV+')' : ''; zoomBar(); }
 async function camStart(){
   const tok=++CAMTOK;
   try{
     if(CAMSTREAM){ CAMSTREAM.getTracks().forEach(t=>t.stop()); CAMSTREAM=null; }
-    const st=await navigator.mediaDevices.getUserMedia({audio:false,
-      video:{facingMode:{ideal:'environment'}, width:{ideal:4032}, height:{ideal:3024}, aspectRatio:{ideal:4/3}}});
+    const base={width:{ideal:4032}, height:{ideal:3024}, aspectRatio:{ideal:4/3}};
+    const vid = CAMDEV ? Object.assign({deviceId:{exact:CAMDEV}},base) : Object.assign({facingMode:{ideal:CAMFACE}},base);
+    const st=await navigator.mediaDevices.getUserMedia({audio:false, video:vid});
     if(tok!==CAMTOK || !camOn() || NATIVE){ st.getTracks().forEach(t=>t.stop()); return; }   // 待っている間に閉じた・別の起動が始まった
     CAMSTREAM=st;
     const v=$('#camv'); v.srcObject=CAMSTREAM; await v.play();
     $('#camerr').style.display='none'; v.style.display='block';
     const showRes=()=>{ $('#camres').textContent=v.videoWidth? v.videoWidth+'×'+v.videoHeight : ''; fitBox(); };
     showRes(); v.onloadedmetadata=showRes; v.onresize=showRes;
-    torchInit();
+    torchInit(); if(!LENSES.length) camLenses(); else zoomBar(); setZoom(CAMZOOMV);
     if(TORCHKEEP){ TORCHKEEP=false; setTimeout(()=>setTorch(true,true),350); }      // 戻る前に点けていたライトを点け直す
   }catch(e){
     $('#camv').style.display='none'; $('#camres').textContent='';
@@ -1312,7 +1431,7 @@ async function camStart(){
   }
 }
 /* 表示枠の形＝保存される写真の形。縦長の映像は「横長固定」なら中央を横長(4:3)に切り出して保存する */
-function camCrop(){ const v=$('#camv'); return DEV.camLand!==false && v.videoWidth>0 && v.videoHeight>v.videoWidth; }
+function camCrop(){ const v=$('#camv'); return v.videoWidth>0 && v.videoHeight>v.videoWidth; }
 function fitBox(){
   const v=$('#camv'), box=$('#cbox'), wrap=box&&box.parentElement; if(!box) return;
   const W=wrap.clientWidth, H=wrap.clientHeight; if(!W||!H) return;
@@ -1324,17 +1443,15 @@ function fitBox(){
 }
 addEventListener('resize',()=>{ if(camOn()) setTimeout(fitBox,60); });
 async function setTorch(on, quiet){
-  const tr=CAMSTREAM&&CAMSTREAM.getVideoTracks()[0]; if(!tr) return false;
-  try{ await tr.applyConstraints({advanced:[{torch:on}]}); TORCH=on; }
-  catch(e){ TORCH=false; if(!quiet) toast('この端末ではライトを使えません'); }
+  const tr=CAMSTREAM&&CAMSTREAM.getVideoTracks()[0]; if(!tr){ if(!quiet) toast('カメラが起動していません'); return false; }
+  try{ await tr.applyConstraints({advanced:[{torch:on}]}); TORCH=on;
+    const ss=tr.getSettings? tr.getSettings() : null; if(on && ss && ss.torch===false) throw new Error('torch'); }
+  catch(e){ TORCH=false; if(!quiet) toast(CAMFACE==='user'?'前のカメラではライトを使えません':'このカメラではライトを使えません'); }
   $('#camtorch').setAttribute('aria-pressed',String(TORCH)); return TORCH===on;
 }
 function torchInit(){
-  const b=$('#camtorch'); TORCH=false; b.setAttribute('aria-pressed','false'); b.hidden=true;
-  try{ const tr=CAMSTREAM&&CAMSTREAM.getVideoTracks()[0]; const caps=tr&&tr.getCapabilities?tr.getCapabilities():null;
-    if(caps && caps.torch) b.hidden=false; }catch(e){}
+  const b=$('#camtorch'); TORCH=false; b.setAttribute('aria-pressed','false'); b.hidden=false;
 }
-function camOriBtn(){ const b=$('#camori'), on=DEV.camLand!==false; b.setAttribute('aria-pressed',String(on)); b.textContent= on? '横長固定' : '縦横自由'; }
 function camLast(){
   const ids=photosOf(CUR._i); CAMLASTID=ids.length? ids[ids.length-1] : null;
   const el=$('#camlast'); el.style.backgroundImage='none';
@@ -1347,7 +1464,7 @@ async function camOpen(key, zenkei){
   if(!key && !zenkei) camFirst();                         // 「この機器の撮影を始める」
   else { CAMKEY=key||UKEY(CUR._i); CAMZEN= zenkei===2?2:(zenkei?1:0); }
   CAMSHOTS=0;
-  $('#cam').classList.add('on'); camOriBtn(); camBars(); camCount(); camLast(); camNav(); camNameFlash();
+  $('#cam').classList.add('on'); camBars(); camCount(); camLast(); camNav(); camNameFlash();
   wake(); await camStart(); fitBox();
 }
 /* 撮り始めの位置：全景がまだなら全景 → 銘板がまだなら銘板 → 部品が1つなら最初の部品 → 未分類 */
@@ -1385,11 +1502,25 @@ function camPick(){
   $('#campk').classList.add('on');
   const c=$('#campkl .cur'); if(c) try{ c.scrollIntoView({block:'center'}); }catch(e){}
 }
+/* 切り替え先でも同じ撮影先に合わせる（部品名＋項目名 → 項目名だけ → 部品だけ）。合わなければ全景から */
+function camSameDest(prev){
+  const ai=CUR._i, gs=groupsOf(CUR);
+  if(prev.z){ CAMZEN=prev.z; CAMKEY=UKEY(ai); return true; }
+  if(prev.item){
+    const g=gs.find(x=>x.label===prev.part), it=g&&g.items.find(i=>i.k===prev.item);
+    if(it){ CAMZEN=0; CAMKEY=it._k; return true; }
+    for(const x of gs){ const i=x.items.find(i=>i.k===prev.item); if(i){ CAMZEN=0; CAMKEY=i._k; return true; } }
+  }
+  if(prev.part){ const g=gs.find(x=>x.label===prev.part); if(g){ CAMZEN=0; CAMKEY=PKEY(ai,g.i); return true; } }
+  return false;
+}
 function camSwitch(ai){
   if(!A[ai]) return;
   $('#campk').classList.remove('on');
   if(CUR===A[ai]) return;
-  CUR=A[ai]; camFirst(); CAMSHOTS=0; camNav(); camNameFlash();
+  const it=CAMZEN?null:CURITEM(CUR,CAMKEY), g=CAMZEN?null:(isU(CAMKEY)?null:gOfKey(CUR,CAMKEY));
+  const prev={z:CAMZEN||0, item:it&&it.k, part:g&&g.label};
+  CUR=A[ai]; if(!camSameDest(prev)) camFirst(); CAMSHOTS=0; camNav(); camNameFlash();
   camBars(); camCount(); camLast();
 }
 function camStep(d){
@@ -1405,7 +1536,7 @@ async function camClose(){
   const ai=CUR&&CUR._i, b=$('#camok');
   if(CAMPEND){ b.textContent='保存中…'; b.disabled=true; }
   try{ await CAMQ; }                              // 保存待ちの写真が書き終わるまで、カメラ画面のまま待つ（その間に別の機器を開かせない）
-  finally{ b.textContent='完了'; b.disabled=false; CAMCLOSING=false; }
+  finally{ b.textContent='閉じる'; b.disabled=false; CAMCLOSING=false; }
   $('#cam').classList.remove('on'); unwake();
   if(CAMFROM==='list'){ CAMFROM=''; list(); }                // 機器一覧から開いたときは一覧に戻る
   else if(CUR && CUR._i===ai) open_(ai, true);
@@ -1451,20 +1582,6 @@ function camBars(){
   ds.textContent = it&&it.d1 ? it.k+'：'+it.d1 : ''; ds.classList.toggle('on', !!(it&&it.d1));
   requestAnimationFrame(()=>{ for(const sel of ['#cbar1 .now','#cbar2 .now']){ const n=$(sel); if(n&&n.scrollIntoView) try{ n.scrollIntoView({block:'nearest',inline:'nearest'}); }catch(e){} } });
 }
-/* 「次の項目」：全景 → 部品ごとの確認項目を順に進む */
-function camNext(){
-  const ai=CUR._i, seq=[]; groupsOf(CUR).forEach(g=>g.items.forEach(it=>seq.push(it._k)));
-  const hasZ=photosOf(ai,'__z').length>0, hasN=photosOf(ai,'__n').length>0;
-  let next=null;
-  if(CAMZEN===1) next='__n';
-  else if(CAMZEN===2) next=seq[0]||null;
-  else if(isU(CAMKEY)) next= !hasZ ? '__z' : !hasN ? '__n' : (seq[0]||null);
-  else if(isP(CAMKEY)){ const g=gOfKey(CUR,CAMKEY); next= g&&g.items[0] ? g.items[0]._k : null; }
-  else { const i=seq.indexOf(CAMKEY); next= (i>=0 && i<seq.length-1) ? seq[i+1] : null; }
-  if(!next){ toast('最後の項目です。「完了」で機器の画面に戻ります'); return; }
-  if(next==='__z'){ CAMZEN=1; CAMKEY=UKEY(ai); } else if(next==='__n'){ CAMZEN=2; CAMKEY=UKEY(ai); } else { CAMZEN=0; CAMKEY=next; }
-  camBars();
-}
 function camCount(){ $('#camn').textContent=CAMSHOTS||''; $('#camn').style.display=CAMSHOTS?'block':'none'; }
 function camFeedback(thumbURL){
   const f=$('#camflash'); f.style.transition='none'; f.style.opacity='1';
@@ -1477,10 +1594,11 @@ function camShoot(){
   const v=$('#camv');
   if(!CAMSTREAM || !v.videoWidth){ alert('カメラが起動していません。「純正カメラで撮る」をお使いください。'); return; }
   if(CAMPEND>=3){ $('#camtag').textContent='保存中…少し待ってください'; setTimeout(camBars,900); return; }
-  const vw=v.videoWidth, vh=v.videoHeight, crop=camCrop();
-  const sw=vw, sh=crop? Math.round(vw*3/4) : vh, sy=crop? Math.round((vh-sh)/2) : 0;
+  const vw=v.videoWidth, vh=v.videoHeight, crop=camCrop(), z=CAMZOOMV||1;
+  const fw=vw, fh=crop? Math.round(vw*3/4) : vh;                         // ズームなしで保存される範囲
+  const sw=Math.round(fw/z), sh=Math.round(fh/z), sx=Math.round((vw-sw)/2), sy=Math.round((vh-sh)/2);
   const cv=document.createElement('canvas'); cv.width=sw; cv.height=sh;
-  cv.getContext('2d').drawImage(v,0,sy,sw,sh,0,0,sw,sh);
+  cv.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,sw,sh);
   const t=document.createElement('canvas'); t.width=160; t.height=Math.round(160*cv.height/cv.width);
   t.getContext('2d').drawImage(cv,0,0,t.width,t.height);
   camFeedback(t.toDataURL('image/jpeg',0.7));
@@ -1498,10 +1616,10 @@ function camShoot(){
 /* 純正カメラ（ファイル選択）で撮った写真を取り込む。iOS は種類（type）を空で渡すことがあるので拡張子でも判定する */
 const isImg=f=>(f.type||'').startsWith('image/') || (!f.type && /\.(jpe?g|heic|heif|png)$/i.test(f.name||'')) || (!f.type && !f.name);
 async function fromFiles(files, ai, key, zenkei){
-  let n=0; const bad=[];
+  let n=0; const bad=[]; fromFiles.ids=[];
   for(const f of files){
     if(!isImg(f)){ bad.push((f.name||'名前なし')+'（'+(f.type||'種類不明')+'）'); continue; }
-    const id=await addPhoto(ai, [key], f, zenkei); if(CUR && CUR._i===ai) CAMLASTID=id; n++;
+    const id=await addPhoto(ai, [key], f, zenkei); if(CUR && CUR._i===ai) CAMLASTID=id; fromFiles.ids.push(id); n++;
   }
   if(bad.length) alert('写真ではないファイルなので取り込みませんでした：\n'+bad.join('\n'));
   return n;
@@ -1711,8 +1829,10 @@ function open_(i, keepScroll){
   CUR=A[i];
   $('#dtitle').textContent=CUR.no+'　'+CUR.name;
   $('#dmeta').textContent=[CUR.ki?'機番 '+CUR.ki:'', CUR.sc?'施設コード '+CUR.sc:facName(CUR.fac), CUR.place||''].filter(Boolean).join('　／　');
+  $('#dspec').textContent=CUR.spec||'';
+  dNav();
   const gs=groupsOf(CUR);
-  const nd=dcOf(CUR._i).length;
+  const nd=dcOf(CUR._i).length, nU=photosOf(CUR._i,UKEY(CUR._i)).length;     // 未分類の写真があるときだけ橙色の段を出す
   const ZEN=`<div class="zen">
       <span class="ph" data-ph="__z"></span>
       <span class="zt"><b>全景写真</b><small>機器の索引用。部位の位置をあとで思い出せます</small></span>
@@ -1721,10 +1841,18 @@ function open_(i, keepScroll){
       <span class="ph" data-ph="__n"></span>
       <span class="zt"><b>銘板写真</b><small>型式・製造番号・出力などを読める大きさで</small></span>
       <button class="shot" data-shot="__n">📷</button></div>
+    ${nU?`<div class="zen un">
+      <span class="ph" data-ph="${UKEY(CUR._i)}"></span>
+      <span class="zt"><b>未分類の写真 ${nU}枚</b><small>部品・項目がまだ決まっていない写真です</small></span>
+      <button class="unb" data-unsort>振り分ける</button></div>`:''}
     ${ionHTML(CUR._i)}
     <div class="camrow">
       <button id="startcam">📷　この機器の撮影を始める</button>
       <button id="dslate">📸 デジカメ<small id="dcinfo">${nd?'記録 '+nd+'回':'カチンコを出す'}</small></button>
+    </div>
+    <div class="camrow">
+      <button id="dgal">🖼　写真一覧・移動<small>${nPhotos(CUR._i)}枚</small></button>
+      <label id="dlibl">写真アプリから取り込む<small>複数可・未分類に入ります</small><input type="file" accept="image/*" multiple id="dlib" class="offscreen"></label>
     </div>`;
   let html='', lastB=null;
   gs.forEach(g=>{
@@ -1777,6 +1905,13 @@ function dfoot(){
   $('#fin').textContent = d?'完了を取り消す':'調査完了';
   $('#dhead').classList.toggle('fin', d);
 }
+function dNav(){
+  const rows=camRows(), i=rows.indexOf(CUR), pv=i>0?rows[i-1]:null, nx=(i>=0&&i<rows.length-1)?rows[i+1]:null;
+  const b1=$('#dprev'), b2=$('#dnext');
+  b1.textContent= pv? '‹ 前へ（'+pv.name+'）' : '‹ 前へ'; b1.disabled=!pv; b1.dataset.i= pv? pv._i : '';
+  b2.textContent= nx? '次へ（'+nx.name+'） ›' : '次へ ›'; b2.disabled=!nx; b2.dataset.i= nx? nx._i : '';
+}
+function dStep(b){ const i=b.dataset.i; if(i==='') return; noteSave(); $('#dask').classList.remove('on'); open_(+i); toast(CUR.no+'　'+CUR.name,1200); }
 function close_(){ noteSave(); $('#dask').classList.remove('on'); $('#detail').classList.remove('on'); document.body.style.overflow=''; list(); applyPending(); }
 
 /* 「済」の反映は画面を作り直さず、その部品だけ塗り替える（スクロール位置が飛ばない） */
@@ -1799,6 +1934,22 @@ $('#dbody').addEventListener('click',e=>{
     return;
   }
   if(e.target.closest('#dslate')){ slateOpen(); return; }
+  if(e.target.closest('#dgal')){ galOpen(CUR._i); return; }
+  if(e.target.closest('[data-unsort]')){ galOpen(CUR._i, photosOf(CUR._i,UKEY(CUR._i))); return; }   // 未分類を選んだ状態で写真一覧を開く
+});
+/* 写真アプリから取り込む（機器の未分類へ入れて、選んだ状態で写真一覧を開く → 移動先を選ぶ） */
+$('#dbody').addEventListener('change',async e=>{
+  if(e.target.id!=='dlib') return;
+  const files=[...(e.target.files||[])]; e.target.value=''; if(!files.length) return;
+  const ai=CUR._i; let n=0;
+  busy('写真を取り込んでいます',0);
+  try{ n=await fromFiles(files, ai, UKEY(ai), 0); }
+  catch(err){ alert('取り込めませんでした。\n'+(err&&err.message||err)); }
+  finally{ busy(false); }
+  if(!n) return;
+  open_(ai,true);
+  galOpen(ai, fromFiles.ids);
+  toast(n+' 枚を未分類に取り込みました。「移動先を選ぶ」で振り分けてください',4000);
 });
 /* 完了にする前に、全景・銘板の写真があるか確かめる。無ければ「撮影する／このまま完了／やめる」を選んでもらう */
 async function okToFinish(ai, from){
@@ -1822,6 +1973,8 @@ $('#daskok').addEventListener('click',async()=>{ const ai=CUR._i; $('#dask').cla
   ST.done[ai]=1; save(); dfoot(); toast('この機器を完了にしました'); });
 $('#daskx').addEventListener('click',()=>$('#dask').classList.remove('on'));
 $('#back').addEventListener('click',close_);
+$('#dprev').addEventListener('click',e=>dStep(e.currentTarget));
+$('#dnext').addEventListener('click',e=>dStep(e.currentTarget));
 $('#list').addEventListener('click',e=>{
   const gl=e.target.closest('[data-gal]');
   if(gl){ galOpen(+gl.dataset.gal); return; }
@@ -1920,7 +2073,7 @@ const csv=rows=>'﻿'+rows.map(r=>r.map(v=>{
   const s=String(v==null?'':v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }).join(',')).join('\r\n');
 
 function photoName(a, p){
-  if(p.z) return '_'+ZL[zOf(p)];
+  if(p.z) return safe(a.no)+'_'+ZL[zOf(p)];                      // 全景・銘板・未分類も機器No.から始める（10/16）
   const ks=(p.k||[]).filter(k=>!isU(k));
   const its=ks.map(k=>CURITEM(a,k)).filter(Boolean);
   if(its.length){ const f=its[0], ps=[...new Set(its.map(i=>safe(i.p)))];
@@ -1928,8 +2081,8 @@ function photoName(a, p){
     const P2=ps.length>2? ps.slice(0,2).join('・')+'等' : ps.join('・'), K2=ks2.length>3? ks2.slice(0,3).join('+')+'等' : ks2.join('+');
     return cut(safe(a.no)+'_'+safe(f.bc||'00')+'-'+safe(f.pc||'00')+'_'+P2+'_'+K2, 90); }   // 全部の項目名は Excel の撮影記録に出る
   const pk=ks.find(isP), g=pk&&gOfKey(a,pk);
-  if(g){ const f=g.items[0]; return safe(a.no)+'_'+safe(f.bc||'00')+'-'+safe(f.pc||'00')+'_'+safe(f.p)+'_未分類'; }
-  return '_未分類';
+  if(g){ const f=g.items[0]; return safe(a.no)+'_'+safe(f.bc||'00')+'-'+safe(f.pc||'00')+'_'+safe(f.p); }
+  return safe(a.no)+'_未分類';
 }
 const CURITEM=(a,k)=>{ const t=String(k).split('-')[1]; if(!/^\d+$/.test(t)) return null; return a.items[+t]||null; };
 
@@ -2051,7 +2204,8 @@ function exportPlan(targets){
     }
     const n=ST.notes&&ST.notes[a._i];
     if(n && ((n.t||'').trim() || (n.s||[]).length)){
-      const nb=f+'/_特記事項'+(U?'_'+U:'');
+      const nt=cut(safe((n.t||'').trim()),30);                           // キーボードで書いた文字の先頭30字をファイル名に入れる（10/16）
+      const nb=f+'/'+safe(a.no)+'_特記事項'+(nt?'_'+nt:'')+(U?'_'+U:'');
       notes.push([...fc,a.no,a.name,(n.t||'').replace(/\r\n?/g,'\n'), (n.s||[]).length?'あり（'+nb+'.png）':'']);
       if((n.s||[]).length){ g.ents.push({k:'png', ai:a._i, name:nb+'.png', est:120*1024}); g.est+=120*1024; }
       if((n.t||'').trim()){ g.ents.push({k:'txt', ai:a._i, name:nb+'.txt', est:4096}); g.est+=4096; }
@@ -2768,6 +2922,33 @@ $('#dbody').addEventListener('click',async e=>{
     return; }
 });
 $('#camok').addEventListener('click',()=>{ $('#campk').classList.remove('on'); camClose(); });
+/* 機器を完了して一覧へ：全景・銘板が無ければ確かめる（撮るを選んだらカメラのまま全景／銘板へ） */
+$('#camfin').addEventListener('click',async()=>{
+  
+  const ai=CUR._i, ps=photosOf(ai), miss=[1,2].filter(z=>!ps.some(id=>zOf(ST.photos[id])===z));
+  if(miss.length){
+    const r=await dlg(miss.map(z=>ZL[z]).join('・')+'の写真がありません',
+      `<p>「${esc(CUR.no)}　${esc(CUR.name)}」は、<b>${miss.map(z=>ZL[z]).join('と')}</b>の写真がまだありません。</p>`,
+      [{id:'cam',label:miss.map(z=>ZL[z]).join('・')+'を撮る'},{id:'ok',label:'このまま完了にする',cls:'sub'},{id:'x',label:'やめる',cls:'sub'}]);
+    if(r==='cam'){ CAMZEN=miss[0]; CAMKEY=UKEY(ai); camBars(); return; }
+    if(r!=='ok') return;
+  }
+  ST.done[ai]=1; save(); CAMFROM='list'; toast(CUR.no+'　'+CUR.name+' を完了にしました',2200);
+  await camClose(); if($('#detail').classList.contains('on')) close_();
+});
+$('#camflip').addEventListener('click',async()=>{ CAMFACE= CAMFACE==='environment'?'user':'environment'; CAMDEV=null; CAMZOOMV=1; await camStart(); });
+$('#camzoom').addEventListener('click',async e=>{
+  const l=e.target.closest('[data-lens]'), z=e.target.closest('[data-zoom]');
+  if(l){ CAMDEV=l.dataset.lens; CAMZOOMV=1; await camStart(); return; }
+  if(z){ const wide=LENSES.find(x=>x.k==='w'); if(CAMDEV && wide && CAMDEV!==wide.id){ CAMDEV=wide.id; CAMZOOMV=+z.dataset.zoom; await camStart(); } else setZoom(+z.dataset.zoom); }
+});
+/* 2本指で広げる・つまむ：デジタルズーム（1〜4倍） */
+(function(){ const box=$('#cbox'); let d0=0, z0=1;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
+  box.addEventListener('touchstart',e=>{ if(e.touches.length===2){ d0=dist(e.touches); z0=CAMZOOMV; } },{passive:true});
+  box.addEventListener('touchmove',e=>{ if(e.touches.length===2 && d0){ e.preventDefault(); setZoom(z0*dist(e.touches)/d0); } },{passive:false});
+  box.addEventListener('touchend',()=>{ d0=0; });
+})();
 $('#camsw').addEventListener('click',()=>{ if($('#campk').classList.contains('on')) $('#campk').classList.remove('on'); else camPick(); });
 $('#campkx').addEventListener('click',()=>$('#campk').classList.remove('on'));
 $('#campkp').addEventListener('click',()=>camStep(-1));
@@ -2775,10 +2956,8 @@ $('#campkn').addEventListener('click',()=>camStep(1));
 $('#cnprev').addEventListener('click',()=>camStep(-1));
 $('#cnnext').addEventListener('click',()=>camStep(1));
 $('#campkl').addEventListener('click',e=>{ const b=e.target.closest('[data-ci]'); if(b) camSwitch(+b.dataset.ci); });
-$('#camnext').addEventListener('click',camNext);
-$('#camori').addEventListener('click',()=>{ DEV.camLand = DEV.camLand===false; saveDev(); camOriBtn(); fitBox(); });
 $('#camtorch').addEventListener('click',()=>setTorch(!TORCH));
-$('#camlast').addEventListener('click',()=>{ if(CAMLASTID) viewPhoto(CAMLASTID); });
+$('#camlast').addEventListener('click',async()=>{ if(CAMPEND){ toast('保存中です…',1200); try{ await CAMQ; }catch(e){} } if(camOn()) galOpen(CUR._i); });
 $('#camsh').addEventListener('click',camShoot);
 $('#cbar1').addEventListener('click',e=>{
   const s=e.target.closest('[data-part]'); if(!s) return;
@@ -2872,7 +3051,7 @@ async function viewPhoto(id){
     <button class="rm" id="vdel">🗑　この写真を削除する</button>`;
 }
 function afterView(){ $('#pv2').classList.remove('on'); VIEW=null; VDIRTY=false;
-  if($('#gal').classList.contains('on')){ galRender(); list(); return; }
+  if($('#gal').classList.contains('on')){ GDIRTY=true; galRender(); list(); return; }
   open_(CUR._i,true); if(camOn()){ camBars(); camLast(); } }
 /* ---------- 機器ごとの写真一覧（機器一覧の枚数から開く） ---------- */
 let GALPREV=null;
@@ -2883,28 +3062,170 @@ function photoLabel(a,p){
   const pk=ks.find(isP); if(pk){ const g=gOfKey(a,pk); return (g?g.label:'')+' ／ 項目未分類'; }
   return '未分類';
 }
-function galOpen(ai){
-  GALPREV=CUR; CUR=A[ai];
-  $('#gal').classList.add('on'); document.body.style.overflow='hidden'; galRender();
+let GSEL=new Set(), GSELM=false, GDEST=[], GDIRTY=false;
+function galOpen(ai, pre){
+  GALPREV=CUR; CUR=A[ai]; GDIRTY=false;
+  GSEL=new Set(pre||[]); GSELM=!!(pre&&pre.length);
+  $('#galopen').hidden = camOn() || $('#detail').classList.contains('on');     // カメラ・機器の画面から開いたときは「閉じる」で元に戻る
+  $('#gal').classList.add('on'); document.body.style.overflow='hidden'; $('#gal').scrollTop=0; galRender();
 }
+function galSelMode(on){ GSELM=on; if(!on) GSEL.clear(); galPaint(); }
+function galPaint(){
+  const g=$('#gal'); g.classList.toggle('selm',GSELM);
+  const b=$('#galsel'); b.setAttribute('aria-pressed',String(GSELM)); b.textContent=GSELM?'選ぶのをやめる':'選ぶ';
+  $('#galb').querySelectorAll('[data-gv]').forEach(t=>t.classList.toggle('sel',GSEL.has(t.dataset.gv)));
+  const n=GSEL.size;
+  $('#galn').innerHTML=(n? n+' 枚を選んでいます' : '写真をタップして選びます')+'<small>選んだ写真を長押しして見出しへドラッグしても移動できます</small>';
+  $('#galmv').disabled=!n; $('#galdel').disabled=!n;
+}
+/* 見出しに離したときの移動先（その見出しの最初の写真と同じ振り分け） */
+function destOf(ai,p){ const z=zOf(p); if(z) return {a:ai,z};
+  const ks=(p.k||[]).filter(k=>!isU(k)); return {a:ai, k: ks.length? ks : [UKEY(ai)]}; }
 async function galRender(){
   const a=CUR, ids=photosOf(a._i);
+  for(const id of [...GSEL]) if(!ST.photos[id]||ST.photos[id].a!==a._i) GSEL.delete(id);
   $('#galt').textContent=a.no+'　'+a.name;
   const ux=ids.filter(id=>!ST.exported[id]).length;
   $('#gals').textContent='写真 '+ids.length+' 枚'+(ux&&ids.length?'（未書き出し '+ux+'）':'')+(ST.done[a._i]?'　／　完了':'');
+  $('#galsel').hidden=!ids.length;
   const {order,G}=viewGroups(a);
-  if(!ids.length){ $('#galb').innerHTML='<p class="empty">この機器の写真はまだありません。<br>「この機器を開く」から撮影できます。</p>'; return; }
-  $('#galb').innerHTML=order.map(L=>`<h5>${esc(L)}<i>${G[L].length}枚</i></h5><div class="ggrid">${G[L].map(id=>
-    `<button class="gtile" data-gv="${id}"><img data-src="${id}" alt="" decoding="async"><span>${stamp(ST.photos[id].ts)}</span>${ST.exported[id]?'<span class="ex">済</span>':''}${ST.photos[id].x?'<span class="px">原本削除済</span>':''}</button>`).join('')}</div>`).join('');
+  GDEST=order.map(L=>destOf(a._i,ST.photos[G[L][0]]));
+  if(!ids.length){ GSELM=false; galPaint(); $('#galb').innerHTML='<p class="empty">この機器の写真はまだありません。<br>「この機器を開く」から撮影できます。</p>'; return; }
+  $('#galb').innerHTML=order.map((L,gi)=>`<h5 data-gd="${gi}">${esc(L)}<i>${G[L].length}枚</i><button class="gsa" data-gsa="${gi}">この見出しを全部選ぶ</button></h5><div class="ggrid">${G[L].map(id=>
+    `<button class="gtile" data-gv="${id}" data-g="${gi}"><img data-src="${id}" alt="" decoding="async" draggable="false"><span>${stamp(ST.photos[id].ts)}</span>${ST.exported[id]?'<span class="ex">済</span>':''}${ST.photos[id].x?'<span class="px">原本削除済</span>':''}</button>`).join('')}</div>`).join('');
+  galPaint();
   for(const im of $('#galb').querySelectorAll('img[data-src]')){
     let u=''; try{ u=await thumbURL(im.dataset.src); }catch(e){}
     if(u) im.src=u; else markBad(im);
   }
 }
-function galClose(){ $('#gal').classList.remove('on'); document.body.style.overflow=''; if(GALPREV!==undefined){ CUR=GALPREV; } list(); applyPending(); }
+function galClose(){
+  $('#gal').classList.remove('on'); $('#mvs').classList.remove('on'); document.body.style.overflow=''; GSEL.clear(); GSELM=false;
+  if(GALPREV!==undefined){ CUR=GALPREV; }
+  if(camOn()){ camBars(); camLast(); }
+  else if(GDIRTY && $('#detail').classList.contains('on')) open_(CUR._i,true);
+  list(); applyPending();
+}
+/* 写真を別の項目・別の機器へ。書き出し済みの写真は名前が変わるので、次の書き出しにもう一度入れる */
+function movePhotos(ids, d){
+  let n=0, re=0;
+  for(const id of ids){ const p=ST.photos[id]; if(!p) continue;
+    const same = p.a===d.a && (d.z ? zOf(p)===d.z : (!zOf(p) && JSON.stringify((p.k||[]).slice().sort())===JSON.stringify(d.k.slice().sort())));
+    if(same) continue;
+    p.a=d.a; if(d.z){ p.z=d.z; p.k=[]; } else { p.z=0; p.k=d.k.slice(); }
+    if(ST.exported[id] && !p.x){ delete ST.exported[id]; re++; }
+    n++;
+  }
+  if(n){ save(); GDIRTY=true; }
+  return {n,re};
+}
+function destLabel(d){ const a=A[d.a]; return photoLabel(a, d.z? {z:d.z} : {k:d.k}); }
+function afterMove(r,d){
+  const a=A[d.a], other=d.a!==CUR._i;
+  GSEL.clear(); GSELM=false; galRender();
+  if(!r.n){ toast('移動先が同じだったので、変わっていません',2500); return; }
+  toast(r.n+' 枚を'+(other? '「'+a.no+' '+a.name+'」の':'')+'「'+destLabel(d)+'」へ移動しました'+(r.re? '（書き出し済みの '+r.re+' 枚は、次の書き出しに新しい名前で入ります）':''), r.re?5000:3000);
+}
+/* 移動先を選ぶ画面 */
+let MVA=null;
+function mvOpen(){ if(!GSEL.size) return; MVA=CUR._i; $('#mvt').textContent=GSEL.size+' 枚の移動先'; mvRender(); $('#mvs').classList.add('on'); }
+function mvRender(){
+  const a=A[MVA], gs=groupsOf(a), other=MVA!==CUR._i;
+  $('#mvmn').innerHTML=`<small>移動先の機器${other?'（別の機器）':''}</small>${esc(a.no)}　${esc(a.name)}`;
+  $('#mvmc').hidden=false;
+  $('#mvl').innerHTML=`<div class="mvb"><button class="zz" data-mz="1">全景</button><button class="zz" data-mz="2">銘板</button><button class="pu" data-mk="${UKEY(MVA)}">未分類</button></div>`+
+    gs.map(g=>`<div class="mvg">${esc(g.label)}</div><div class="mvb"><button class="pu" data-mk="${PKEY(MVA,g.i)}">部品だけ（項目未分類）</button>`+
+      g.items.map(it=>`<button data-mk="${it._k}">${esc(it.k)}</button>`).join('')+'</div>').join('');
+}
+function mvMachines(q){
+  const rows=camRows(), nq=norm(q||'');
+  const hit=rows.filter(a=>!nq || norm([a.no,a.name,a.place||'',a.ki||''].join(' ')).includes(nq));
+  const box=$('#mvl'), inp=box.querySelector('input');
+  const html=hit.map(a=>`<button class="mva ${a._i===MVA?'cur':''}" data-mva="${a._i}"><small>${esc(a.no)}${a.place?'　'+esc(a.place):''}</small><b>${esc(a.name)}</b></button>`).join('')||'<p class="ehelp">見つかりません</p>';
+  if(!inp){ box.innerHTML='<input type="search" id="mvq" placeholder="機器名・番号・設置場所で検索" autocomplete="off"><div id="mvql"></div>'; box.querySelector('#mvq').addEventListener('input',e=>mvMachines(e.target.value)); }
+  $('#mvql').innerHTML=html; $('#mvmc').hidden=true;
+  $('#mvmn').innerHTML='<small>移動先の機器を選んでください</small>'+esc(A[MVA].no)+'　'+esc(A[MVA].name);
+  if(!q){ const c=$('#mvql .cur'); if(c) try{ c.scrollIntoView({block:'center'}); }catch(e){} }
+}
+$('#mvmc').addEventListener('click',()=>{ $('#mvl').innerHTML=''; mvMachines(''); });
+$('#mvx').addEventListener('click',()=>$('#mvs').classList.remove('on'));
+$('#mvl').addEventListener('click',e=>{
+  const m=e.target.closest('[data-mva]'); if(m){ MVA=+m.dataset.mva; mvRender(); $('#mvl').scrollTop=0; return; }
+  const z=e.target.closest('[data-mz]'), k=e.target.closest('[data-mk]'); if(!z&&!k) return;
+  const d= z? {a:MVA, z:+z.dataset.mz} : {a:MVA, k:[k.dataset.mk]};
+  $('#mvs').classList.remove('on');
+  afterMove(movePhotos([...GSEL], d), d);
+});
+$('#galsel').addEventListener('click',()=>galSelMode(!GSELM));
+$('#galall').addEventListener('click',()=>{ const all=[...$('#galb').querySelectorAll('[data-gv]')].map(t=>t.dataset.gv);
+  if(all.every(id=>GSEL.has(id))) GSEL.clear(); else all.forEach(id=>GSEL.add(id)); galPaint(); });
+$('#galmv').addEventListener('click',mvOpen);
+$('#galdel').addEventListener('click',async()=>{
+  const ids=[...GSEL]; if(!ids.length) return;
+  const ex=ids.filter(id=>ST.exported[id]).length;
+  const r=await dlg(ids.length+' 枚の写真を削除します',
+    `<p>選んだ <b>${ids.length} 枚</b>を iPad から削除します。元に戻せません。</p>`+(ex?`<p>うち ${ex} 枚は書き出し済みです（PCに送ったファイルは消えません）。</p>`:''),
+    [{id:'del',label:'削除する',cls:'warn'},{id:'x',label:'やめる',cls:'sub'}]);
+  if(r!=='del') return;
+  busy('削除しています',0);
+  try{ for(const [i,id] of ids.entries()){ await delPhoto(id); if((i+1)%10===0) busy('削除しています',(i+1)/ids.length); } }
+  finally{ busy(false); }
+  GDIRTY=true; GSEL.clear(); GSELM=false; galRender(); toast(ids.length+' 枚を削除しました',2500);
+});
 $('#galx').addEventListener('click',galClose);
 $('#galopen').addEventListener('click',()=>{ const i=CUR._i; $('#gal').classList.remove('on'); open_(i); });
-$('#galb').addEventListener('click',e=>{ const t=e.target.closest('[data-gv]'); if(t) viewPhoto(t.dataset.gv); });
+$('#galb').addEventListener('click',e=>{
+  const sa=e.target.closest('[data-gsa]');
+  if(sa){ const ts=[...$('#galb').querySelectorAll('[data-g="'+sa.dataset.gsa+'"]')].map(t=>t.dataset.gv);
+    if(ts.every(id=>GSEL.has(id))) ts.forEach(id=>GSEL.delete(id)); else ts.forEach(id=>GSEL.add(id)); galPaint(); return; }
+  const t=e.target.closest('[data-gv]'); if(!t) return;
+  if(GSELM){ const id=t.dataset.gv; if(GSEL.has(id)) GSEL.delete(id); else GSEL.add(id); galPaint(); return; }
+  viewPhoto(t.dataset.gv);
+});
+/* 長押しで選ぶ → そのまま指を動かすと、選んだ写真をまとめて見出しへドラッグ */
+(function(){
+  const gal=$('#gal'), gb=$('#galb'), gh=$('#gghost');
+  let lp=null, sx=0, sy=0, drag=null, eat=false;
+  const over=(x,y)=>{ const el=document.elementFromPoint(x,y); return el&&el.closest? el.closest('#galb h5[data-gd]') : null; };
+  function end(drop){
+    clearTimeout(lp); lp=null; if(!drag) return;
+    cancelAnimationFrame(drag.raf);
+    const h=drag.h; gh.style.display='none'; gal.classList.remove('dragging');
+    gb.querySelectorAll('.drag').forEach(t=>t.classList.remove('drag')); gb.querySelectorAll('h5.drop').forEach(x=>x.classList.remove('drop'));
+    drag=null;
+    if(drop && h){ const d=GDEST[+h.dataset.gd]; if(d) afterMove(movePhotos([...GSEL], d), d); }
+  }
+  function loop(){ if(!drag) return;
+    const H=innerHeight, y=drag.y; let v=0;
+    if(y<130) v=-Math.min(18,(130-y)/5); else if(y>H-110) v=Math.min(18,(y-(H-110))/5);
+    if(v){ gal.scrollTop+=v; mark(); }
+    drag.raf=requestAnimationFrame(loop); }
+  function mark(){ const h=over(drag.x,drag.y); if(h!==drag.h){ if(drag.h) drag.h.classList.remove('drop'); drag.h=h; if(h) h.classList.add('drop'); } }
+  gb.addEventListener('pointerdown',e=>{
+    const t=e.target.closest('[data-gv]'); if(!t || (e.pointerType==='mouse'&&e.button!==0)) return;
+    sx=e.clientX; sy=e.clientY; clearTimeout(lp); eat=false;
+    lp=setTimeout(()=>{ lp=null; const id=t.dataset.gv;
+      if(!GSELM){ GSELM=true; GSEL.clear(); }
+      GSEL.add(id); galPaint(); eat=true;
+      drag={x:sx,y:sy,h:null,raf:0,moved:false};
+      const im=t.querySelector('img'); gh.style.backgroundImage=im&&im.src?'url('+im.src+')':'none'; gh.querySelector('b').textContent=GSEL.size;
+      if(navigator.vibrate) try{ navigator.vibrate(15); }catch(_){}
+    },420);
+  });
+  addEventListener('pointermove',e=>{
+    if(lp && Math.hypot(e.clientX-sx,e.clientY-sy)>10){ clearTimeout(lp); lp=null; }
+    if(!drag) return;
+    drag.x=e.clientX; drag.y=e.clientY;
+    if(!drag.moved && Math.hypot(e.clientX-sx,e.clientY-sy)>8){ drag.moved=true; gal.classList.add('dragging');
+      gb.querySelectorAll('[data-gv]').forEach(t=>t.classList.toggle('drag',GSEL.has(t.dataset.gv))); gh.style.display='block'; drag.raf=requestAnimationFrame(loop); }
+    if(drag.moved){ gh.style.left=e.clientX+'px'; gh.style.top=e.clientY+'px'; mark(); }
+  });
+  addEventListener('pointerup',()=>{ end(true); });
+  addEventListener('pointercancel',()=>{ end(false); });
+  gal.addEventListener('touchmove',e=>{ if(drag) e.preventDefault(); },{passive:false});      // ドラッグ中は画面をスクロールさせない
+  gal.addEventListener('contextmenu',e=>{ if(e.target.closest('[data-gv]')) e.preventDefault(); });
+  gb.addEventListener('click',e=>{ if(eat){ eat=false; e.stopPropagation(); e.preventDefault(); } },true);   // 長押しのあとのタップで写真を開かない
+})();
 /* 閉じる：削除したときだけ後ろの画面を描き直す（それ以外は開く前の画面のまま） */
 $('#vclose').addEventListener('click',()=>{ if(VDIRTY) afterView(); else { $('#pv2').classList.remove('on'); VIEW=null; } });
 $('#vprev').addEventListener('click',()=>viewStep(-1));
@@ -2980,7 +3301,7 @@ function nameEx(){
   el.innerHTML='<b>ファイル名の例</b><br>'+
     'ZIP：<code>'+esc('ストマネ_'+t+(u?'_'+u:'')+'_'+tsName(new Date())+'.zip')+'</code><br>'+
     '調査記録：<code>'+esc('_調査記録'+(u?'_'+u:'')+'.xlsx')+'</code><br>'+
-    '写真：<code>'+esc('_全景'+pu+'_1.jpg')+'</code>　<code>'+esc(item+pu+'_1.jpg')+'</code>'+
+    '写真：<code>'+esc((a?safe(a.no):'S-001')+'_全景'+pu+'_1.jpg')+'</code>　<code>'+esc(item+pu+'_1.jpg')+'</code>'+
     (u?'':'<br><span style="color:var(--warn)">名前が空なので、ファイル名に名前が入りません</span>');
 }
 $('#efz').addEventListener('click',e=>{ const b=e.target.closest('[data-fz]'); if(!b) return; DEV.fz=+b.dataset.fz; saveDev(); applyFz(); fzSeg(); });
